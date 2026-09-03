@@ -116,7 +116,8 @@ C:\Windows\system32> route -p add 172.16.1.2 mask 255.255.255.255 192.168.230.13
 C:\Windows\system32> route print
 ```
 
-> ![Modul 01 Isi dari "route print"](../../assets/phase-1-sandbox/route-print.png)
+![Modul 01 Topology](../assets/phase-1-sandbox/route-print.PNG)
+> ![Modul 01 Isi dari "route print"](../../assets/phase-1-sandbox/route-print.PNG)
 > _[Instruksi]: Tangkap layar output command "route print" pada Command Prompt Windows dan pastikan rute persisten menuju subnet 172.16.1.2 terdaftar._
 
 ### Langkah 5: Instalasi & Aktivasi Layanan OpenSSH Server
