@@ -13,8 +13,6 @@
 
 ![gambar 0.0](/assets/phase-1-sandbox/skema-visual-create-vm.drawio.png)
 
-> _[Placeholder Gambar]: Buatlah skema visual yang menunjukkan Server 1 sebagai "Base VM" dengan snapshot "Fresh Install", dan Server 2 ditarik sebagai "Linked Clone" dari snapshot tersebut._
-
 ### Tabel Alokasi Sumber Daya Virtual (VMware Workstation)
 
 | VM Name                     | vCPU (Cores) | RAM (Instalasi) | RAM (Runtime) | Storage Capacity    | OS / Versi                      |
