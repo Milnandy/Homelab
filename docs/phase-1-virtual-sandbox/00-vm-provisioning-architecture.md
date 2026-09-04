@@ -11,9 +11,7 @@
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 00 Provisioning](../assets/phase-1-sandbox/00-vm-provisioning-architecture.png)
-
-> _[Placeholder Gambar]: Buatlah skema visual yang menunjukkan Server 1 sebagai "Base VM" dengan snapshot "Fresh Install", dan Server 2 ditarik sebagai "Linked Clone" dari snapshot tersebut._
+![gambar 0.0](/assets/phase-1-sandbox/skema-visual-create-vm.drawio.png)
 
 ### Tabel Alokasi Sumber Daya Virtual (VMware Workstation)
 
