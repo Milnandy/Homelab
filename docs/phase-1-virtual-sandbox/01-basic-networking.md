@@ -42,6 +42,9 @@ Berikut adalah revisi lengkap **Modul 01** yang telah disempurnakan. Saya telah 
 # Mengubah default target systemd ke multi-user (CLI)
 ubuntu@ubuntu-server-1-24:~$ sudo systemctl set-default multi-user.target
 
+# Mengubah kembali ke graphical (GUI)
+ubuntu@ubuntu-server-1-24:~$ sudo systemctl set-default graphical.target
+
 # Melakukan restart untuk memverifikasi perubahan
 ubuntu@ubuntu-server-1-24:~$ sudo reboot
 ```
@@ -116,7 +119,7 @@ C:\Windows\system32> route -p add 172.16.1.2 mask 255.255.255.255 192.168.230.13
 C:\Windows\system32> route print
 ```
 
-> ![Modul 01 Isi dari "route print"](/assets/phase-1-sandbox/route-print.PNG)
+![Modul 01 Isi dari "route print"](/assets/phase-1-sandbox/route-print.PNG)
 
 > _[gambar-basic-networking-1.2]: Output command "route print" pada Command Prompt Windows berada pada Persistent Routes menuju subnet 172.16.1.2 ._
 
@@ -128,7 +131,15 @@ C:\Windows\system32> route print
 ```bash
 # Memperbarui indeks paket repositori lokal
 ubuntu@ubuntu-server-1-24:~$ sudo apt update
+```
 
+![Modul 01 Isi dari "route print"](/assets/phase-1-sandbox/Networking-1.1.PNG)
+
+> _[error]: failed to fetch https://id.archive.ubuntu.com ._
+
+- solusi:
+
+```bash
 # Mengunduh dan menginstal layanan OpenSSH Server
 ubuntu@ubuntu-server-1-24:~$ sudo apt install openssh-server -y
 
