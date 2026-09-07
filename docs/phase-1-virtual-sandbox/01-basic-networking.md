@@ -26,8 +26,8 @@ Berikut adalah revisi lengkap **Modul 01** yang telah disempurnakan. Saya telah 
 | Device Name        | Interface    | IP Address / Subnet    | VLAN / Note                         |
 | ------------------ | ------------ | ---------------------- | ----------------------------------- |
 | Windows Host       | VMnet8 (NAT) | 192.168.230.1 /24      | Default Gateway VM untuk akses luar |
-| ubuntu-server-1-24 | ens33 (NAT)  | DHCP (192.168.230.134) | Jalur pembaruan sistem & paket      |
-| ubuntu-server-1-24 | ens37 (LAN)  | 172.16.1.2 /24         | Segmen lokal internal terisolasi    |
+| ubuntu-server-1-24 | ens33 (NAT)  | DHCP (192.168.230.143) | Jalur pembaruan sistem & paket      |
+| ubuntu-server-1-24 | ens37 (LAN)  | 172.16.2.2 /24         | Segmen lokal internal terisolasi    |
 
 ---
 
@@ -85,7 +85,7 @@ network:
     ens37:
       dhcp4: false
       addresses:
-        - 172.16.1.2/24
+        - 172.16.2.2/24
       nameservers:
         addresses: [4.2.2.2, 8.8.8.8]
       routes:
@@ -105,12 +105,12 @@ ubuntu@ubuntu-server-1-24:~$ sudo netplan apply
 
 ### Langkah 4: Penambahan Rute Statis pada Windows Host
 
-- **Penjelasan Singkat:** Agar host Windows dapat menjangkau IP segmen LAN VM (`172.16.1.2`), kita perlu mendaftarkan rute khusus di dalam tabel routing Windows yang mengarah ke gateway IP NAT VM.
+- **Penjelasan Singkat:** Agar host Windows dapat menjangkau IP segmen LAN VM (`172.16.2.2`), kita perlu mendaftarkan rute khusus di dalam tabel routing Windows yang mengarah ke gateway IP NAT VM.
 - **Perintah CLI / Konfigurasi:**
 
 ```cmd
 :: Jalankan Command Prompt Windows sebagai Administrator
-C:\Windows\system32> route -p add 172.16.1.2 mask 255.255.255.255 192.168.230.134
+C:\Windows\system32> route -p add 172.16.2.2 mask 255.255.255.255 192.168.230.143
 ```
 
 - **Untuk Melihat Hasil Konfigurasi:**
@@ -121,7 +121,7 @@ C:\Windows\system32> route print
 
 ![Modul 01 Isi dari "route print"](/assets/phase-1-sandbox/route-print.PNG)
 
-> _[gambar-basic-networking-1.2]: Output command "route print" pada Command Prompt Windows berada pada Persistent Routes menuju subnet 172.16.1.2 ._
+> _[gambar-basic-networking-1.2]: Output command "route print" pada Command Prompt Windows berada pada Persistent Routes menuju subnet 172.16.2.2 ._
 
 ### Langkah 5: Instalasi & Aktivasi Layanan OpenSSH Server
 
@@ -144,13 +144,21 @@ ubuntu@ubuntu-server-1-24:~$ sudo apt update
 ubuntu@ubuntu-server-1-24:~$ sudo apt install openssh-server -y
 
 # Memastikan layanan SSH aktif dan berjalan otomatis saat booting
-ubuntu@ubuntu-server-1-24:~$ sudo systemctl enable ssh
-ubuntu@ubuntu-server-1-24:~$ sudo systemctl start ssh
+ubuntu@ubuntu-server-1-24:~$ sudo systemctl enable --now ssh
 ```
 
 ### Langkah 6: Migrasi Port Layanan SSH (systemd socket)
 
 - **Penjelasan Singkat:** Mulai Ubuntu 22.04/24.04, penanganan port SSH dikontrol oleh unit `ssh.socket` [6]. Perubahan port pada `/etc/ssh/sshd_config` harus disertai dengan _override_ konfigurasi socket systemd [6].
+
+```bash
+# Membuka sshd_config
+ubuntu@ubuntu-server-1-24:~$ nano /etc/ssh/sshd_config
+
+# Hapus Pagar dan sesuaikan port "#Port 22"  --> "Port 2201"
+Port 2201
+```
+
 - **Perintah CLI / Konfigurasi:**
 
 ```bash
@@ -187,11 +195,11 @@ ubuntu@ubuntu-server-1-24:~$ sudo systemctl restart ssh.socket
 ubuntu@ubuntu-server-1-24:~$ ss -tulpn | grep ssh
 
 # Melakukan uji koneksi dari host Windows menggunakan port custom
-C:\Windows\system32> ssh milnandy@172.16.1.2 -p 2201
+C:\Windows\system32> ssh milnandy@172.16.2.2 -p 2201
 ```
 
 > ![Modul 01 Verifikasi SSH](../assets/phase-1-sandbox/01-ssh-verification.png)
-> _[Instruksi]: Ambil tangkapan layar terminal Cmd Windows saat sukses terhubung ke server 172.16.1.2 lewat SSH pada port 2201._
+> _[Instruksi]: Ambil tangkapan layar terminal Cmd Windows saat sukses terhubung ke server 172.16.2.2 lewat SSH pada port 2201._
 
 ### Log Masalah Terkenal & Solusi (Troubleshooting Log)
 
@@ -204,7 +212,3 @@ C:\Windows\system32> ssh milnandy@172.16.1.2 -p 2201
 3.  **SSH Port Tetap Berjalan di Port 22:**
     - _Gejala:_ Port SSH tidak berubah meskipun file `/etc/ssh/sshd_config` telah dimodifikasi [6].
     - _Solusi:_ Ubuntu 24.04 mengabaikan parameter port di `sshd_config` karena kontrolnya telah diserahkan sepenuhnya ke `ssh.socket` [6]. Konfigurasi wajib dilakukan menggunakan instruksi `systemctl edit ssh.socket` [6].
-
-```
-
-```
