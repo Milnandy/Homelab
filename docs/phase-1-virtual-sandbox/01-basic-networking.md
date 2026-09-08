@@ -17,9 +17,7 @@ Berikut adalah revisi lengkap **Modul 01** yang telah disempurnakan. Saya telah 
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 01 Topology](../assets/phase-1-sandbox/01-basic-networking-topology.png)
-
-> _[Placeholder Gambar]: Gambarlah diagram yang menunjukkan laptop host Windows terhubung ke VM melalui dua adapter: Network Adapter 1 (NAT) dan Network Adapter 2 (LAN Segment)._
+![Phase1.01 gambar 1](/assets/phase-1-sandbox/Server1-network.drawio.png)
 
 ### Tabel Pengamatan IP / Interface
 
@@ -119,9 +117,9 @@ C:\Windows\system32> route -p add 172.16.2.2 mask 255.255.255.255 192.168.230.14
 C:\Windows\system32> route print
 ```
 
-![Modul 01 Isi dari "route print"](/assets/phase-1-sandbox/route-print.PNG)
+![Phase1.01 gambar 2](/assets/phase-1-sandbox/route-print.PNG)
 
-> _[gambar-basic-networking-1.2]: Output command "route print" pada Command Prompt Windows berada pada Persistent Routes menuju subnet 172.16.2.2 ._
+> _Output command "route print" pada Command Prompt Windows berada pada Persistent Routes menuju subnet 172.16.2.2 ._
 
 ### Langkah 5: Instalasi & Aktivasi Layanan OpenSSH Server
 
@@ -133,11 +131,41 @@ C:\Windows\system32> route print
 ubuntu@ubuntu-server-1-24:~$ sudo apt update
 ```
 
-![Modul 01 Isi dari "route print"](/assets/phase-1-sandbox/Networking-1.1.PNG)
+![Phase1.01 gambar 3](/assets/phase-1-sandbox/Networking-1.1.PNG)
 
 > _[error]: failed to fetch https://id.archive.ubuntu.com ._
 
-- solusi:
+solusi:
+cek isi resolv
+
+```bash
+#print isi file resolv.conf
+ubuntu@ubuntu-server-1-24:~$ cat /etc/resolv.conf
+```
+
+Output yang diharapkan:
+
+```bash
+nameserver 172.16.2.2
+nameserver 8.8.8.8
+```
+
+jika output yang diharapkan tidak ada:
+
+```bash
+#hapus config lama
+ubuntu@ubuntu-server-1-24:~$ rm /etc/resolv.conf
+#buat dan simpan config baru
+ubuntu@ubuntu-server-1-24:~$ echo "nameserver 172.16.2.2
+> nameserver 8.8.8.8" > /etc/resolv.conf
+```
+
+Jalankan kembali:
+
+```bash
+# Memperbarui indeks paket repositori lokal
+ubuntu@ubuntu-server-1-24:~$ sudo apt update
+```
 
 ```bash
 # Mengunduh dan menginstal layanan OpenSSH Server
@@ -146,6 +174,16 @@ ubuntu@ubuntu-server-1-24:~$ sudo apt install openssh-server -y
 # Memastikan layanan SSH aktif dan berjalan otomatis saat booting
 ubuntu@ubuntu-server-1-24:~$ sudo systemctl enable --now ssh
 ```
+
+Verifikasi status service:
+
+```bash
+ubuntu@ubuntu-server-1-24:~$ sudo systemctl status ssh
+```
+
+Output yang diharapkan seperti dibawah:
+
+![Phase1.01 gambar 4](/assets/phase-1-sandbox/ssh-status.PNG)
 
 ### Langkah 6: Migrasi Port Layanan SSH (systemd socket)
 
@@ -157,6 +195,12 @@ ubuntu@ubuntu-server-1-24:~$ nano /etc/ssh/sshd_config
 
 # Hapus Pagar dan sesuaikan port "#Port 22"  --> "Port 2201"
 Port 2201
+
+# Cek syntax pada file sshd_config, jika tidak ada output berarti syntax sudah benar
+ubuntu@ubuntu-server-1-24:~$ sudo sshd -t
+
+# Restart service
+ubuntu@ubuntu-server-1-24:~$ sudo systemctl restart ssh
 ```
 
 - **Perintah CLI / Konfigurasi:**
@@ -198,7 +242,8 @@ ubuntu@ubuntu-server-1-24:~$ ss -tulpn | grep ssh
 C:\Windows\system32> ssh milnandy@172.16.2.2 -p 2201
 ```
 
-> ![Modul 01 Verifikasi SSH](../assets/phase-1-sandbox/01-ssh-verification.png)
+![Phase1.01 gambar 5](/assets/phase-1-sandbox/ssh.PNG)
+
 > _[Instruksi]: Ambil tangkapan layar terminal Cmd Windows saat sukses terhubung ke server 172.16.2.2 lewat SSH pada port 2201._
 
 ### Log Masalah Terkenal & Solusi (Troubleshooting Log)

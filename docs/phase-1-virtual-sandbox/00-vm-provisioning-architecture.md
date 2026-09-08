@@ -96,14 +96,14 @@
 - **Penjelasan Singkat:** Membuat replika Server 2 menggunakan metode _Linked Clone_ berbasis titik _snapshot_ Server 1 untuk menghemat kapasitas harddisk fisik host hingga 90% [17, 18].
 - **Urutan Langkah pada VMware GUI:**
 
-1.  Klik kanan pada VM `ubuntu-server-1-24` di menu library VMware, pilih **Manage** -> **Clone...** [18]
+1.  Klik kanan pada VM `Ubuntu_Server_1.2_24` di menu library VMware, pilih **Manage** -> **Clone...** [18]
     ![Phase1.00 gambar 21](/assets/phase-1-sandbox/New-VM1.25.PNG)
 2.  Pada jendela Clone Wizard, klik _Next_.
 3.  Di bagian _Clone Source_, pilih opsi **An existing snapshot (powered off only)**, lalu pilih nama snapshot `Fresh Install` yang telah Anda buat sebelumnya. Klik _Next_ [18].
     ![Phase1.00 gambar 22](/assets/phase-1-sandbox/New-VM1.26.PNG)
 4.  Di bagian _Clone Type_, pilih **Create a linked clone** (Pilihan mutlak untuk efisiensi penyimpanan) [17, 18].
     ![Phase1.00 gambar 23](/assets/phase-1-sandbox/New-VM1.28.PNG)
-5.  Beri nama VM baru ini `ubuntu-server-2-24`, tentukan folder penyimpanannya, lalu klik _Finish_.
+5.  Beri nama VM baru ini `Ubuntu_Server_2.2_24`, tentukan folder penyimpanannya, lalu klik _Finish_.
 
 ---
 
