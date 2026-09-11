@@ -17,7 +17,7 @@ Berikut adalah revisi lengkap **Modul 01** yang telah disempurnakan. Saya telah 
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Phase1.01 gambar 1](/assets/phase-1-sandbox/Server1-network.drawio.png)
+![Phase1.01 gambar 1](/assets/phase-1-sandbox/Server1-2-network.drawio.png)
 
 ### Tabel Pengamatan IP / Interface
 
