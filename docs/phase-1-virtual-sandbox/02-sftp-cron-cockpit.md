@@ -153,11 +153,11 @@ Buka aplikasi **FileZilla** atau **WinSCP** pada Windows Host, lalu masukkan par
 2. Masuk menggunakan kredensial _root_ atau _sudo user_ Server 1.
 3. Untuk memantau Server 2 dari satu layar, pilih menu **Dashboard** atau **Server List**, lalu tambahkan koneksi ke Server 2 (`172.16.2.3`).
 
-![Cockpit Web Access Verification](/assets/phase-1-sandbox/xx.png)
+![Cockpit Web Access Verification](/assets/phase-1-sandbox/image/Cockpit.PNG)
 
 > _[Instruksi]: Masukkan tangkapan layar sukses membuka halaman login Cockpit di web browser._
 
-![Cockpit Multi-Server Integration Verification](/assets/phase-1-sandbox/xx.png)
+![Cockpit Multi-Server Integration Verification](/assets/phase-1-sandbox/image/Cockpit2.PNG)
 
 > _[Instruksi]: Masukkan tangkapan layar panel Cockpit Server 1 yang berhasil mendeteksi dan menampilkan status metrik Server 2 di dalam satu dasbor._
 
