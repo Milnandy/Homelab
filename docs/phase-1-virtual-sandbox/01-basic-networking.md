@@ -12,7 +12,7 @@
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Phase1.01 gambar 1](/assets/phase-1-sandbox/image/Server1-2-network.drawio.png)
+![Phase1.01 gambar 1](/assets/phase-1-sandbox/image/topologi-jaringan-windows-server1-server2.drawio.png)
 
 > _Topologi menunjukkan laptop host Windows terhubung ke Server 1 melalui dua adapter: Network Adapter 1 (NAT) dan Network Adapter 2 (LAN Segment). Server 2 terhubung ke Server 1 melalui Network Adapter 2 (LAN Segment), di mana Server 1 bertindak sebagai gateway perantara._
 

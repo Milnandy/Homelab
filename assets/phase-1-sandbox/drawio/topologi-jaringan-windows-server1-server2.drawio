@@ -1,0 +1,145 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0">
+  <diagram id="topology1" name="Topologi Jaringan">
+    <mxGraphModel dx="774" dy="431" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=22;fontStyle=1;fontColor=#0F172A;" value="Topologi Jaringan Windows Host – Server 1 – Server 2" vertex="1">
+          <mxGeometry height="40" width="1000" x="30" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=14;fontColor=#475569;" value="NAT + LAN Segment | Server 1 sebagai gateway perantara" vertex="1">
+          <mxGeometry height="30" width="1000" x="30" y="58" as="geometry" />
+        </mxCell>
+        <mxCell id="win" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF4FF;strokeColor=#2563EB;strokeWidth=2;fontColor=#12345B;verticalAlign=top;align=center;spacingTop=10;" value="&lt;b&gt;Windows Host&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;Laptop / VMware Host&lt;/font&gt;" vertex="1">
+          <mxGeometry height="310" width="260" x="40" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAFBF2;strokeColor=#16A34A;strokeWidth=2;fontColor=#14532D;verticalAlign=top;align=center;spacingTop=10;" value="&lt;b&gt;Ubuntu Server 1&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;Gateway Perantara&lt;/font&gt;" vertex="1">
+          <mxGeometry height="310" width="300" x="370" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F2EDFF;strokeColor=#7C3AED;strokeWidth=2;fontColor=#4C1D95;verticalAlign=top;align=center;spacingTop=10;" value="&lt;b&gt;Ubuntu Server 2&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;Internal Server&lt;/font&gt;" vertex="1">
+          <mxGeometry height="310" width="260" x="760" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="w_nat" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;strokeWidth=1;fontColor=#1E293B;align=left;spacingLeft=8;verticalAlign=middle;" value="&lt;b&gt;Network Adapter 1&lt;/b&gt;&lt;br&gt;VMnet8 (NAT)&lt;br&gt;192.168.230.1 /24&lt;br&gt;&lt;font color=&quot;#2563EB&quot;&gt;Default Gateway VM untuk akses luar&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="120" x="160" y="165" as="geometry" />
+        </mxCell>
+        <mxCell id="w_lan" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;strokeWidth=1;fontColor=#1E293B;align=left;spacingLeft=8;verticalAlign=middle;" value="&lt;b&gt;Network Adapter 2&lt;/b&gt;&lt;br&gt;LAN Segment&lt;br&gt;&lt;font color=&quot;#EA580C&quot;&gt;Segmen internal ke Server 1&lt;/font&gt;" vertex="1">
+          <mxGeometry height="75" width="120" x="160" y="285" as="geometry" />
+        </mxCell>
+        <mxCell id="s1_nat" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;strokeWidth=1;fontColor=#1E293B;align=left;spacingLeft=8;verticalAlign=middle;" value="&lt;b&gt;ens33 (NAT)&lt;/b&gt;&lt;br&gt;DHCP: 192.168.230.143&lt;br&gt;&lt;font color=&quot;#2563EB&quot;&gt;Update sistem &amp; paket luar&lt;/font&gt;" vertex="1">
+          <mxGeometry height="85" width="130" x="390" y="165" as="geometry" />
+        </mxCell>
+        <mxCell id="s1_lan" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;strokeWidth=1;fontColor=#1E293B;align=left;spacingLeft=8;verticalAlign=middle;" value="&lt;b&gt;ens37 (LAN)&lt;/b&gt;&lt;br&gt;172.16.2.2 /24&lt;br&gt;&lt;font color=&quot;#16A34A&quot;&gt;Gateway internal / isolated&lt;/font&gt;" vertex="1">
+          <mxGeometry height="75" width="130" x="390" y="285" as="geometry" />
+        </mxCell>
+        <mxCell id="s2_nat" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;strokeWidth=1;fontColor=#1E293B;align=left;spacingLeft=8;verticalAlign=middle;" value="&lt;b&gt;ens33 (NAT)&lt;/b&gt;&lt;br&gt;Disconnected&lt;br&gt;&lt;font color=&quot;#DC2626&quot;&gt;Jalur luar dimatikan&lt;/font&gt;" vertex="1">
+          <mxGeometry height="85" width="110" x="780" y="165" as="geometry" />
+        </mxCell>
+        <mxCell id="s2_lan" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;strokeWidth=1;fontColor=#1E293B;align=left;spacingLeft=8;verticalAlign=middle;" value="&lt;b&gt;ens37 (LAN)&lt;/b&gt;&lt;br&gt;172.16.2.3 /24&lt;br&gt;&lt;font color=&quot;#EA580C&quot;&gt;Gateway diarahkan ke Server 1&lt;/font&gt;" vertex="1">
+          <mxGeometry height="75" width="110" x="780" y="285" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="w_nat" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2563EB;strokeWidth=2;endArrow=block;" target="s1_nat" value="NAT / akses luar">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="w_lan" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EA580C;strokeWidth=2;endArrow=block;" target="s1_lan" value="LAN Segment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="s1_lan" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#16A34A;strokeWidth=2;endArrow=block;" target="s2_lan" value="LAN Segment · gateway 172.16.2.2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#EA580C;fontColor=#9A3412;align=center;verticalAlign=middle;" value="&lt;b&gt;Server 1 bertindak sebagai gateway perantara&lt;/b&gt;&lt;br&gt;Server 2 menggunakan jalur internal melalui 172.16.2.2" vertex="1">
+          <mxGeometry height="55" width="610" x="390" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="tableTitle" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E3A5F;strokeColor=#1E3A5F;fontColor=#FFFFFF;fontSize=15;fontStyle=1;align=left;spacingLeft=10;verticalAlign=middle;" value="Tabel Pengamatan IP / Interface" vertex="1">
+          <mxGeometry height="35" width="980" x="40" y="475" as="geometry" />
+        </mxCell>
+        <mxCell id="h0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DCEBFA;strokeColor=#94A3B8;fontStyle=1;fontColor=#12345B;align=center;verticalAlign=middle;" value="Device Name" vertex="1">
+          <mxGeometry height="35" width="210" x="40" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="h1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DCEBFA;strokeColor=#94A3B8;fontStyle=1;fontColor=#12345B;align=center;verticalAlign=middle;" value="Interface" vertex="1">
+          <mxGeometry height="35" width="170" x="250" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="h2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DCEBFA;strokeColor=#94A3B8;fontStyle=1;fontColor=#12345B;align=center;verticalAlign=middle;" value="IP Address / Subnet" vertex="1">
+          <mxGeometry height="35" width="220" x="420" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="h3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DCEBFA;strokeColor=#94A3B8;fontStyle=1;fontColor=#12345B;align=center;verticalAlign=middle;" value="VLAN / Note" vertex="1">
+          <mxGeometry height="35" width="380" x="640" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="Windows Host" vertex="1">
+          <mxGeometry height="42" width="210" x="40" y="545" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="VMnet8 (NAT)" vertex="1">
+          <mxGeometry height="42" width="170" x="250" y="545" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="192.168.230.1 /24" vertex="1">
+          <mxGeometry height="42" width="220" x="420" y="545" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="Default Gateway VM untuk akses luar" vertex="1">
+          <mxGeometry height="42" width="380" x="640" y="545" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="ubuntu-server-1-24" vertex="1">
+          <mxGeometry height="42" width="210" x="40" y="587" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="ens33 (NAT)" vertex="1">
+          <mxGeometry height="42" width="170" x="250" y="587" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="DHCP (192.168.230.143)" vertex="1">
+          <mxGeometry height="42" width="220" x="420" y="587" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="Jalur pembaruan sistem &amp; paket luar" vertex="1">
+          <mxGeometry height="42" width="380" x="640" y="587" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="ubuntu-server-1-24" vertex="1">
+          <mxGeometry height="42" width="210" x="40" y="629" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="ens37 (LAN)" vertex="1">
+          <mxGeometry height="42" width="170" x="250" y="629" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="172.16.2.2 /24" vertex="1">
+          <mxGeometry height="42" width="220" x="420" y="629" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="Segmen lokal internal terisolasi" vertex="1">
+          <mxGeometry height="42" width="380" x="640" y="629" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="ubuntu-server-2-24" vertex="1">
+          <mxGeometry height="42" width="210" x="40" y="671" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="ens33 (NAT)" vertex="1">
+          <mxGeometry height="42" width="170" x="250" y="671" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="Disconnected" vertex="1">
+          <mxGeometry height="42" width="220" x="420" y="671" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="Jalur luar dimatikan (Isolated)" vertex="1">
+          <mxGeometry height="42" width="380" x="640" y="671" as="geometry" />
+        </mxCell>
+        <mxCell id="r4c0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="ubuntu-server-2-24" vertex="1">
+          <mxGeometry height="42" width="210" x="40" y="713" as="geometry" />
+        </mxCell>
+        <mxCell id="r4c1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="ens37 (LAN)" vertex="1">
+          <mxGeometry height="42" width="170" x="250" y="713" as="geometry" />
+        </mxCell>
+        <mxCell id="r4c2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="172.16.2.3 /24" vertex="1">
+          <mxGeometry height="42" width="220" x="420" y="713" as="geometry" />
+        </mxCell>
+        <mxCell id="r4c3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;fontColor=#1E293B;align=left;verticalAlign=middle;spacingLeft=6;" value="Mengarah gateway ke Server 1" vertex="1">
+          <mxGeometry height="42" width="380" x="640" y="713" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#334155;align=left;verticalAlign=middle;spacingLeft=10;" value="&lt;b&gt;Legenda&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#2563EB&quot;&gt;Biru:&lt;/font&gt; NAT / akses luar&lt;br&gt;&lt;font color=&quot;#EA580C&quot;&gt;Oranye:&lt;/font&gt; LAN Segment&lt;br&gt;&lt;font color=&quot;#16A34A&quot;&gt;Hijau:&lt;/font&gt; jalur internal &amp; gateway" vertex="1">
+          <mxGeometry height="95" width="300" x="40" y="745" as="geometry" />
+        </mxCell>
+        <mxCell id="notes" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#334155;align=left;verticalAlign=middle;spacingLeft=10;" value="&lt;b&gt;Catatan&lt;/b&gt;&lt;br&gt;• Server 1 memiliki dua interface: NAT dan LAN.&lt;br&gt;• Server 2 mematikan interface NAT agar terisolasi dari jaringan luar.&lt;br&gt;• Gateway Server 2 diarahkan ke 172.16.2.2 melalui ens37." vertex="1">
+          <mxGeometry height="95" width="660" x="360" y="745" as="geometry" />
+        </mxCell>
+        <mxCell id="ca-Jq-6bv7f4BGye_F-9-2" parent="1" style="fontColor=#0066CC;verticalAlign=top;verticalLabelPosition=bottom;labelPosition=center;align=center;html=1;outlineConnect=0;fillColor=#CCCCCC;strokeColor=#6881B3;gradientColor=none;gradientDirection=north;strokeWidth=2;shape=mxgraph.networks.laptop;" value="" vertex="1">
+          <mxGeometry height="55" width="100" x="50" y="237.5" as="geometry" />
+        </mxCell>
+        <mxCell id="ca-Jq-6bv7f4BGye_F-9-3" parent="1" style="fontColor=#0066CC;verticalAlign=top;verticalLabelPosition=bottom;labelPosition=center;align=center;html=1;outlineConnect=0;fillColor=#CCCCCC;strokeColor=#6881B3;gradientColor=none;gradientDirection=north;strokeWidth=2;shape=mxgraph.networks.server;" value="" vertex="1">
+          <mxGeometry height="100" width="90" x="550" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="ca-Jq-6bv7f4BGye_F-9-4" parent="1" style="fontColor=#0066CC;verticalAlign=top;verticalLabelPosition=bottom;labelPosition=center;align=center;html=1;outlineConnect=0;fillColor=#CCCCCC;strokeColor=#6881B3;gradientColor=none;gradientDirection=north;strokeWidth=2;shape=mxgraph.networks.server;" value="" vertex="1">
+          <mxGeometry height="100" width="90" x="910" y="185" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,72 @@
+<mxfile host="app.diagrams.net" modified="2026-09-17T07:30:00.000Z" agent="Mozilla/5.0" version="24.7.17" type="device">
+  <diagram id="topologi-ref" name="Topologi Jaringan">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title1" value="ubuntu-server-1-24" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#222222;" vertex="1" parent="1">
+          <mxGeometry x="120" y="25" width="220" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="title2" value="ubuntu-server-2-24" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#222222;" vertex="1" parent="1">
+          <mxGeometry x="475" y="25" width="220" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s1" value="" style="shape=mxgraph.networks.server;html=1;whiteSpace=wrap;fillColor=#d9d9d9;strokeColor=#6d86b5;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="155" y="70" width="150" height="155" as="geometry"/>
+        </mxCell>
+        <mxCell id="s2" value="" style="shape=mxgraph.networks.server;html=1;whiteSpace=wrap;fillColor=#d9d9d9;strokeColor=#6d86b5;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="510" y="70" width="150" height="95" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lanlabel" value="LAN&lt;br&gt;172.16.2.0/24" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=17;fontColor=#222222;" vertex="1" parent="1">
+          <mxGeometry x="320" y="92" width="170" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lanline" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#222222;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="s2" target="s1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="natlabel" value="NAT&lt;br&gt;192.168.230.143" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=17;fontColor=#222222;" vertex="1" parent="1">
+          <mxGeometry x="15" y="250" width="180" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="lan2label" value="LAN&lt;br&gt;172.16.2.2" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=17;fontColor=#222222;" vertex="1" parent="1">
+          <mxGeometry x="300" y="250" width="180" height="65" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="host" value="Host Windows" style="shape=mxgraph.networks.laptop;html=1;whiteSpace=wrap;fillColor=#d9d9d9;strokeColor=#6d86b5;strokeWidth=2;fontSize=16;align=center;verticalAlign=bottom;spacingBottom=0;" vertex="1" parent="1">
+          <mxGeometry x="210" y="405" width="170" height="115" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edgeNat" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#222222;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="s1" target="host">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="80" y="225"/>
+              <mxPoint x="80" y="375"/>
+              <mxPoint x="250" y="375"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edgeLan" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#222222;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="s1" target="host">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="225"/>
+              <mxPoint x="350" y="375"/>
+              <mxPoint x="335" y="375"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="note" value="Server 1 sebagai gateway perantara" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=15;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="455" y="385" width="245" height="55" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="tableTitle" value="Tabel Pengamatan IP / Interface" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1f4e78;strokeColor=#1f4e78;fontColor=#ffffff;fontStyle=1;fontSize=16;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="20" y="555" width="760" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="table" value="Device Name | Interface | IP Address / Subnet | VLAN / Note&#10;Windows Host | VMnet8 (NAT) | 192.168.230.1 /24 | Default Gateway VM untuk akses luar&#10;ubuntu-server-1-24 | ens33 (NAT) | DHCP (192.168.230.143) | Jalur pembaruan sistem &amp; paket luar&#10;ubuntu-server-1-24 | ens37 (LAN) | 172.16.2.2 /24 | Segmen lokal internal terisolasi&#10;ubuntu-server-2-24 | ens33 (NAT) | Disconnected | Jalur luar dimatikan (Isolated)&#10;ubuntu-server-2-24 | ens37 (LAN) | 172.16.2.3 /24 | Mengarahkan gateway ke Server 1" style="shape=note;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6d86b5;fontSize=12;align=left;verticalAlign=top;spacing=5;" vertex="1" parent="1">
+          <mxGeometry x="20" y="590" width="760" height="225" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
