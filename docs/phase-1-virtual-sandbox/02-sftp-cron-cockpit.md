@@ -11,9 +11,9 @@
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 02 Topology](/assets/image/02-sftp-cron-cockpit-topology.png)
+![Modul 02 Topology](/assets/phase-1-sandbox/image/diagram-akses-monitoring-editable.drawio.png)
 
-> _[Placeholder Gambar]: Gambarlah diagram yang menunjukkan pengguna FileZilla/WinSCP dari Windows Host mengakses port 2201 (SFTP Jail) dan browser mengakses port 9090 (Cockpit) pada VM Server 1 yang memantau Server 2._
+> _Diagram pengguna FileZilla/WinSCP dari Windows Host mengakses port 2201 (SFTP Jail) dan browser mengakses port 9090 (Cockpit) pada VM Server 1 yang memantau Server 2._
 
 ### Tabel Pengamatan IP / Layanan
 
@@ -43,6 +43,10 @@ ubuntu@ubuntu-server-1-24:~$ sudo chmod 755 /var/sftp/shared
 # 3. Mengatur kepemilikan subfolder upload agar bisa diakses oleh grup sftp
 ubuntu@ubuntu-server-1-24:~$ sudo chown root:sftpgroup /var/sftp/shared/upload
 ubuntu@ubuntu-server-1-24:~$ sudo chmod 755 /var/sftp/shared/upload
+
+# 4. Mengatur kepemilikan subfolder sharing-folder agar bisa diakses oleh grup sftp dengan full permission
+ubuntu@ubuntu-server-1-24:~$ sudo chown root:sftpgroup /var/sftp/shared/upload/sharing-folder
+ubuntu@ubuntu-server-1-24:~$ sudo chmod 775 /var/sftp/shared/upload/sharing-folder
 ```
 
 Membuat grup, user tanpa _home_ (`-M`), dan memblokir shell (`-s /usr/sbin/nologin`):
@@ -141,11 +145,19 @@ Buka aplikasi **FileZilla** atau **WinSCP** pada Windows Host, lalu masukkan par
 
 ![SFTP Filezilla Site Manager Config](/assets/phase-1-sandbox/image/FileZilla.PNG)
 
-> _[Instruksi]: Masukkan tangkapan layar konfigurasi Site Manager FileZilla atau Session WinSCP._
+> _Contoh konfigurasi Site Manager pada FileZilla._
+
+![SFTP WinSCP Config](/assets/phase-1-sandbox/image/WinSCP.PNG)
+
+> _Contoh konfigurasi Session WinSCP._
 
 ![SFTP Connection Success Verification](/assets/phase-1-sandbox/image/FileZilla1.PNG)
 
-> _[Instruksi]: Masukkan tangkapan layar koneksi sukses aplikasi FileZilla/WinSCP menggunakan sftpuser1, menampilkan direktori yang terisolasi secara aman hanya pada folder /upload._
+> _Tampilan success connection pada FileZilla._
+
+![SFTP Connection Success Verification](/assets/phase-1-sandbox/image/WinSCP1.PNG)
+
+> _Tampilan success connection pada WinSCP._
 
 ### Pengujian Dasbor Terpusat Cockpit
 

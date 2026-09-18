@@ -1,0 +1,140 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0">
+  <diagram id="network-diagram" name="Diagram Akses &amp; Monitoring">
+    <mxGraphModel dx="1290" dy="718" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontColor=#102A43;fontSize=28;fontStyle=1;align=left;verticalAlign=middle;" value="Diagram Akses &amp; Monitoring&lt;br&gt;&lt;font style=&quot;font-size:18px&quot;&gt;FileZilla/WinSCP (SFTP) &amp; Browser (Cockpit) dari Windows Host&lt;/font&gt;" vertex="1">
+          <mxGeometry height="70" width="1500" x="30" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="win" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF4FF;strokeColor=#2563EB;strokeWidth=2;fontColor=#123B72;fontSize=16;spacing=8;" value="&lt;b&gt;Windows Host&lt;/b&gt;&lt;br&gt;(Client)&lt;br&gt;&lt;br&gt;🖥️ &lt;b&gt;FileZilla / WinSCP&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;SFTP Client&lt;/font&gt;&lt;br&gt;&lt;br&gt;🌐 &lt;b&gt;Browser&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;Cockpit UI&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;IP contoh: 192.168.1.10&lt;/font&gt;" vertex="1">
+          <mxGeometry height="390" width="350" x="40" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E9F8EF;strokeColor=#16A34A;strokeWidth=2;fontColor=#14532D;fontSize=16;spacing=8;" value="&lt;b&gt;Ubuntu Server 1&lt;/b&gt;&lt;br&gt;(Cockpit Master)&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;172.16.2.2&lt;/font&gt;&lt;br&gt;&lt;br&gt;&amp;nbsp;Ubuntu Server&lt;br&gt;&lt;br&gt;&lt;b&gt;SFTP (SSH Subsystem)&lt;/b&gt;&lt;br&gt;Port &lt;b&gt;2201&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;Isolasi direktori bersama&lt;br&gt;/var/sftp/shared/upload&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Cockpit Central Dashboard&lt;/b&gt;&lt;br&gt;Port &lt;b&gt;9090&lt;/b&gt;" vertex="1">
+          <mxGeometry height="390" width="400" x="610" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1ECFF;strokeColor=#7C3AED;strokeWidth=2;fontColor=#4C1D95;fontSize=16;spacing=8;" value="&lt;b&gt;Ubuntu Server 2&lt;/b&gt;&lt;br&gt;(Cockpit Agent)&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;172.16.2.3&lt;/font&gt;&lt;br&gt;&lt;br&gt;&amp;nbsp;Ubuntu Server&lt;br&gt;&lt;br&gt;&lt;b&gt;Cockpit Agent&lt;/b&gt;&lt;br&gt;Port &lt;b&gt;9090&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;Terhubung ke Cockpit Master&lt;/font&gt;" vertex="1">
+          <mxGeometry height="390" width="320" x="1220" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" edge="1" parent="1" source="win" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#16A34A;strokeWidth=3;fontColor=#15803D;fontSize=16;endArrow=block;endFill=1;" target="s1" value="SFTP (SSH Subsystem)&lt;br&gt;&lt;b&gt;Port 2201&lt;/b&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2563EB;strokeWidth=3;fontColor=#1D4ED8;fontSize=16;endArrow=block;endFill=1;" value="HTTPS (Cockpit)&lt;br&gt;&lt;b&gt;Port 9090&lt;/b&gt;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="390" y="420" as="sourcePoint" />
+            <mxPoint x="610" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a3" edge="1" parent="1" source="s1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#EA580C;strokeWidth=3;fontColor=#C2410C;fontSize=16;endArrow=block;endFill=1;" target="s2" value="Cockpit Agent&lt;br&gt;&lt;b&gt;Port 9090&lt;/b&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="net1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#60A5FA;fontColor=#1E3A8A;fontSize=15;align=center;" value="Network 1&lt;br&gt;&lt;b&gt;192.168.230.0/24&lt;/b&gt;" vertex="1">
+          <mxGeometry height="55" width="500" x="170" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="net2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#A78BFA;fontColor=#5B21B6;fontSize=15;align=center;" value="Network 2&lt;br&gt;&lt;b&gt;172.16.2.0/24&lt;/b&gt;" vertex="1">
+          <mxGeometry height="55" width="450" x="940" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="tabletitle" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E477A;strokeColor=#1E477A;fontColor=#FFFFFF;fontSize=18;align=left;spacingLeft=12;" value="&lt;b&gt;Tabel Pengamatan IP / Layanan&lt;/b&gt;" vertex="1">
+          <mxGeometry height="45" width="1000" x="40" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="h0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DCEBFA;strokeColor=#94A3B8;fontColor=#123B72;fontSize=14;align=center;verticalAlign=middle;" value="&lt;b&gt;Device Name&lt;/b&gt;" vertex="1">
+          <mxGeometry height="48" width="210" x="40" y="695" as="geometry" />
+        </mxCell>
+        <mxCell id="h1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DCEBFA;strokeColor=#94A3B8;fontColor=#123B72;fontSize=14;align=center;verticalAlign=middle;" value="&lt;b&gt;Protokol / Layanan&lt;/b&gt;" vertex="1">
+          <mxGeometry height="48" width="250" x="250" y="695" as="geometry" />
+        </mxCell>
+        <mxCell id="h2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DCEBFA;strokeColor=#94A3B8;fontColor=#123B72;fontSize=14;align=center;verticalAlign=middle;" value="&lt;b&gt;Port&lt;/b&gt;" vertex="1">
+          <mxGeometry height="48" width="90" x="500" y="695" as="geometry" />
+        </mxCell>
+        <mxCell id="h3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DCEBFA;strokeColor=#94A3B8;fontColor=#123B72;fontSize=14;align=center;verticalAlign=middle;" value="&lt;b&gt;Jalur Akses&lt;/b&gt;" vertex="1">
+          <mxGeometry height="48" width="170" x="590" y="695" as="geometry" />
+        </mxCell>
+        <mxCell id="h4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DCEBFA;strokeColor=#94A3B8;fontColor=#123B72;fontSize=14;align=center;verticalAlign=middle;" value="&lt;b&gt;Keterangan&lt;/b&gt;" vertex="1">
+          <mxGeometry height="48" width="280" x="760" y="695" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="ubuntu-server-1-24" vertex="1">
+          <mxGeometry height="66" width="210" x="40" y="743" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="SFTP (SSH Subsystem)" vertex="1">
+          <mxGeometry height="66" width="250" x="250" y="743" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="2201" vertex="1">
+          <mxGeometry height="66" width="90" x="500" y="743" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="192.168.230.143" vertex="1">
+          <mxGeometry height="66" width="170" x="590" y="743" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="Isolasi direktori bersama&lt;br&gt;/var/sftp/shared/upload" vertex="1">
+          <mxGeometry height="66" width="280" x="760" y="743" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="ubuntu-server-1-24" vertex="1">
+          <mxGeometry height="66" width="210" x="40" y="809" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="Cockpit Central Dashboard" vertex="1">
+          <mxGeometry height="66" width="250" x="250" y="809" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="9090" vertex="1">
+          <mxGeometry height="66" width="90" x="500" y="809" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="https://172.16.2.2:9090" vertex="1">
+          <mxGeometry height="66" width="170" x="590" y="809" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="Memantau kesehatan&lt;br&gt;Server 1 &amp; Server 2" vertex="1">
+          <mxGeometry height="66" width="280" x="760" y="809" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="ubuntu-server-2-24" vertex="1">
+          <mxGeometry height="66" width="210" x="40" y="875" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="Cockpit Agent" vertex="1">
+          <mxGeometry height="66" width="250" x="250" y="875" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="9090" vertex="1">
+          <mxGeometry height="66" width="90" x="500" y="875" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="172.16.2.3:9090" vertex="1">
+          <mxGeometry height="66" width="170" x="590" y="875" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=middle;spacing=6;" value="Terhubung ke Cockpit Master" vertex="1">
+          <mxGeometry height="66" width="280" x="760" y="875" as="geometry" />
+        </mxCell>
+        <mxCell id="legendtitle" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF2FB;strokeColor=#7C9AC0;fontColor=#123B72;fontSize=16;align=left;spacingLeft=10;" value="&lt;b&gt;Keterangan Warna Panah&lt;/b&gt;" vertex="1">
+          <mxGeometry height="45" width="460" x="1080" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="lg0" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontColor=#16A34A;fontSize=14;align=left;verticalAlign=middle;" value="━━━  SFTP (Port 2201) – Windows → Server 1" vertex="1">
+          <mxGeometry height="40" width="420" x="1100" y="705" as="geometry" />
+        </mxCell>
+        <mxCell id="lg1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontColor=#2563EB;fontSize=14;align=left;verticalAlign=middle;" value="━━━  Cockpit (Port 9090) – Windows → Server 1" vertex="1">
+          <mxGeometry height="40" width="420" x="1100" y="750" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontColor=#EA580C;fontSize=14;align=left;verticalAlign=middle;" value="━━━  Cockpit Agent (Port 9090) – Server 1 ↔ Server 2" vertex="1">
+          <mxGeometry height="40" width="420" x="1100" y="795" as="geometry" />
+        </mxCell>
+        <mxCell id="notetitle" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF2FB;strokeColor=#7C9AC0;fontColor=#123B72;fontSize=16;align=left;spacingLeft=10;" value="&lt;b&gt;Catatan&lt;/b&gt;" vertex="1">
+          <mxGeometry height="45" width="460" x="1080" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="notes" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B6C4D4;fontColor=#173B68;fontSize=13;align=left;verticalAlign=top;spacing=10;" value="• Server 1 berfungsi sebagai Cockpit Master dan menyediakan SFTP port 2201.&lt;br&gt;• Server 2 terhubung ke Cockpit melalui agent port 9090.&lt;br&gt;• Akses Cockpit dari browser: https://172.16.2.2:9090&lt;br&gt;• Sesuaikan IP, subnet, dan port dengan konfigurasi VM sebenarnya." vertex="1">
+          <mxGeometry height="150" width="460" x="1080" y="895" as="geometry" />
+        </mxCell>
+        <mxCell id="line1" edge="1" parent="1" source="win" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2563EB;strokeWidth=2;endArrow=none;" target="net1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="line2" edge="1" parent="1" source="s1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2563EB;strokeWidth=2;endArrow=none;" target="net1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="line3" edge="1" parent="1" source="s1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#7C3AED;strokeWidth=2;endArrow=none;" target="net2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="line4" edge="1" parent="1" source="s2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#7C3AED;strokeWidth=2;endArrow=none;" target="net2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EgdtjlPOadClHdzMNaNE-3" parent="1" style="shape=mxgraph.networks.server;html=1;whiteSpace=wrap;fillColor=#d9d9d9;strokeColor=#6d86b5;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="721" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="EgdtjlPOadClHdzMNaNE-4" parent="1" style="shape=mxgraph.networks.server;html=1;whiteSpace=wrap;fillColor=#d9d9d9;strokeColor=#6d86b5;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="1291" y="310" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
