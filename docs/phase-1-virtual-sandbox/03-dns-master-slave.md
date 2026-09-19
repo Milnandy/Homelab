@@ -5,21 +5,21 @@
 - **Tujuan Pembelajaran:** Membangun layanan resolusi nama internal menggunakan BIND9, mendesain arsitektur Master-Slave untuk toleransi kesalahan (_fault-tolerance_), serta memahami penulisan rekaman forward dan reverse DNS [8].
 - **Skenario / Case Study:** Dalam infrastruktur berskala besar, kegagalan sistem DNS dapat menyebabkan seluruh aplikasi kehilangan koneksi. Skenario ini diatasi dengan merancang dua server DNS (Master dan Slave). Ketika DNS Master tidak aktif, DNS Slave akan secara otomatis melayani permintaan resolusi nama tanpa intervensi manual.
 - **Kebutuhan Perangkat / Prasyarat:**
-  - 2 Unit VM Ubuntu 24.04 LTS (172.16.1.2 dan 172.16.1.3)
+  - 2 Unit VM Ubuntu 24.04 LTS (172.16.2.2 dan 172.16.2.3)
   - Paket BIND9 (`bind9`, `bind9-utils`)
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 03 Topology](../assets/03-dns-master-slave-topology.png)
+![Modul 03 Topology](/assets/phase-1-sandbox/image/03-dns-master-slave-topology.png)
 
-> _[Placeholder Gambar]: Diagram alur komunikasi DNS Zone Transfer menggunakan port TCP 53 dari server Master (172.16.1.2) ke server Slave (172.16.1.3)._
+> _[Placeholder Gambar]: Diagram alur komunikasi DNS Zone Transfer menggunakan port TCP 53 dari server Master (172.16.2.2) ke server Slave (172.16.2.3)._
 
 ### Tabel Pengamatan IP / Interface
 
 | Device Name        | Peran                 | IP Address | Domain Terdaftar           |
 | ------------------ | --------------------- | ---------- | -------------------------- |
-| ubuntu-server-1-24 | DNS Master (Primary)  | 172.16.1.2 | milnandy.local             |
-| ubuntu-server-2-24 | DNS Slave (Secondary) | 172.16.1.3 | milnandy.local (Replicate) |
+| ubuntu-server-1-24 | DNS Master (Primary)  | 172.16.2.2 | milnandy.local             |
+| ubuntu-server-2-24 | DNS Slave (Secondary) | 172.16.2.3 | milnandy.local (Replicate) |
 
 ---
 
@@ -61,15 +61,15 @@ Isi dari `/etc/bind/milnandy.local/milnandy.local.zone`:
 zone "milnandy.local" {
     type master;
     file "/etc/bind/milnandy.local/milnandy.local";
-    allow-transfer { 172.16.1.3; };
-    also-notify { 172.16.1.3; };
+    allow-transfer { 172.16.2.3; };
+    also-notify { 172.16.2.3; };
 };
 
-zone "1.16.172.in-addr.arpa" {
+zone "2.16.172.in-addr.arpa" {
     type master;
-    file "/etc/bind/milnandy.local/db.1.16.172";
-    allow-transfer { 172.16.1.3; };
-    also-notify { 172.16.1.3; };
+    file "/etc/bind/milnandy.local/db.2.16.172";
+    allow-transfer { 172.16.2.3; };
+    also-notify { 172.16.2.3; };
 };
 ```
 
@@ -85,14 +85,14 @@ $TTL    604800
                          604800 )       ; Negative Cache TTL
 ;
 @       IN      NS      milnandy.local.
-@       IN      A       172.16.1.2
-www     IN      A       172.16.1.2
-blog    IN      A       172.16.1.2
-games   IN      A       172.16.1.2
+@       IN      A       172.16.2.2
+www     IN      A       172.16.2.2
+blog    IN      A       172.16.2.2
+games   IN      A       172.16.2.2
 game    IN      CNAME   games
 ```
 
-Isi berkas Reverse `/etc/bind/milnandy.local/db.1.16.172`:
+Isi berkas Reverse `/etc/bind/milnandy.local/db.2.16.172`:
 
 ```text
 $TTL    604800
@@ -127,13 +127,13 @@ Isi konfigurasi pada server Slave:
 zone "milnandy.local" {
     type slave;
     file "milnandy.local";
-    masters { 172.16.1.2; };
+    masters { 172.16.2.2; };
 };
 
-zone "1.16.172.in-addr.arpa" {
+zone "2.16.172.in-addr.arpa" {
     type slave;
-    file "db.1.16.172";
-    masters { 172.16.1.2; };
+    file "db.2.16.172";
+    masters { 172.16.2.2; };
 };
 ```
 
@@ -158,14 +158,14 @@ ubuntu@ubuntu-server-1-24:~$ named-checkzone milnandy.local /etc/bind/milnandy.l
 
 # Pengujian resolusi nama (Forward & Reverse) menggunakan nslookup
 ubuntu@ubuntu-server-1-24:~$ nslookup www.milnandy.local
-ubuntu@ubuntu-server-1-24:~$ nslookup 172.16.1.2
+ubuntu@ubuntu-server-1-24:~$ nslookup 172.16.2.2
 ```
 
 ### Log Masalah Terkenal & Solusi (Troubleshooting Log)
 
 1.  **Reverse Lookup Menghasilkan Error NXDOMAIN:**
-    - _Gejala:_ Perintah `nslookup 172.16.1.2` tidak menghasilkan domain `www.milnandy.local` melainkan error `NXDOMAIN` [8].
-    - _Solusi:_ Pada berkas reverse zona kelas C (`/24`), kolom pertama PTR record tidak boleh diisi dengan alamat IP penuh (`172.16.1.2`), melainkan wajib diisi dengan oktet terakhir saja dari IP host tersebut (angka `2`) [8].
+    - _Gejala:_ Perintah `nslookup 172.16.2.2` tidak menghasilkan domain `www.milnandy.local` melainkan error `NXDOMAIN` [8].
+    - _Solusi:_ Pada berkas reverse zona kelas C (`/24`), kolom pertama PTR record tidak boleh diisi dengan alamat IP penuh (`172.16.2.2`), melainkan wajib diisi dengan oktet terakhir saja dari IP host tersebut (angka `2`) [8].
 2.  **VM Kehilangan Koneksi Internet Luar Setelah Bypass resolv.conf:**
     - _Gejala:_ Perintah `apt update` gagal karena nama host repositori Ubuntu tidak dapat ditemukan.
     - _Penyebab:_ Bypassing `resolv.conf` langsung mengarah ke DNS lokal yang belum dikonfigurasi dengan _forwarders_ internet [9].
