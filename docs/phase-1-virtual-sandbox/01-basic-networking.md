@@ -1,6 +1,6 @@
 # Modul 01: Inisialisasi Sandbox OS & Jaringan Ganda (Dual-NIC)
 
-## 📌 Ringkasan & Tujuan
+## 📚 Ringkasan & Tujuan
 
 - **Tujuan Pembelajaran:** Melakukan instalasi dasar Linux Server teroptimasi, mengonfigurasi arsitektur jaringan ganda (Dual-NIC), mengaktifkan fungsi _IP Forwarding_ pada Server 1 agar bertindak sebagai _router/gateway_, menginstal dan mengamankan akses SSH, mengonfigurasi rute statis pada sistem host Windows, serta menyiapkan Server 2 (Slave) di bawah kendali _gateway_ internal.
 - **Skenario / Case Study:** Komputer host memiliki keterbatasan RAM (8 GB). Untuk menghemat penggunaan memori, VM Ubuntu dikonfigurasi secara _headless_ (tanpa antarmuka grafis). Dibuat dua server (Master dan Slave) di segmen LAN terisolasi. Server 1 bertindak sebagai router/gateway bagi Server 2 setelah akses internet luar pada Server 2 diputus untuk keperluan pengujian isolasi jaringan internal.
@@ -12,7 +12,7 @@
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Phase1.01 gambar 1](/assets/phase-1-sandbox/image/topologi-jaringan-windows-server1-server2.drawio.png)
+![Phase1.01 gambar 1](../../assets/phase-1-sandbox/image/topologi-jaringan-windows-server1-server2.drawio.png)
 
 > _Topologi menunjukkan laptop host Windows terhubung ke Server 1 melalui dua adapter: Network Adapter 1 (NAT) dan Network Adapter 2 (LAN Segment). Server 2 terhubung ke Server 1 melalui Network Adapter 2 (LAN Segment), di mana Server 1 bertindak sebagai gateway perantara._
 
@@ -138,7 +138,7 @@ C:\Windows\system32> route -p add 172.16.2.2 mask 255.255.255.255 192.168.230.14
 C:\Windows\system32> route print
 ```
 
-![Phase1.01 gambar 2](/assets/phase-1-sandbox/image/route-print.PNG)
+![Phase1.01 gambar 2](../../assets/phase-1-sandbox/image/route-print.PNG)
 
 > _Output command "route print" pada Command Prompt Windows dan pastikan rute persisten menuju subnet 172.16.2.2 terdaftar._
 
@@ -147,16 +147,14 @@ C:\Windows\system32> route print
 - **Penjelasan Singkat:** Mengonfigurasi penamaan DNS (_resolver_) agar server dapat mengenali alamat repositori internet dengan lancar, mengunduh paket `openssh-server`, serta memastikan layanan SSH aktif dan berjalan otomatis saat sistem menyala.
 - **Perintah CLI / Konfigurasi:**
 
-Sebelum mengunduh paket dari internet, pastikan server menggunakan konfigurasi DNS resolver lokal dan publik yang benar agar tidak terjadi kegagalan saat menjalankan `apt update`.
+Sebelum mengunduh paket dari internet, pastikan server menggunakan konfigurasi DNS resolver yang valid agar proses `apt update` tidak gagal.
 
 ```bash
-# Menghapus symlink atau file resolv.conf bawaan yang belum diatur
-ubuntu@ubuntu-server-1-24:~$ sudo rm /etc/resolv.conf
-
-# Membuat dan menyimpan konfigurasi DNS baru dengan nameserver lokal dan publik
-ubuntu@ubuntu-server-1-24:~$ sudo echo "nameserver 172.16.2.2
-nameserver 8.8.8.8" > /etc/resolv.conf
+# Menambahkan nameserver lokal dan publik dengan cara yang aman
+ubuntu@ubuntu-server-1-24:~$ printf "%s\n" "nameserver 172.16.2.2" "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
 ```
+
+> `tee` adalah perintah Linux yang valid dan umum dipakai untuk menulis isi ke file sambil tetap menampilkan output di terminal. Dalam contoh ini, `sudo tee /etc/resolv.conf` memastikan file tersebut ditulis dengan hak root, sehingga konfigurasi DNS dapat diterapkan dengan aman.
 
 ### Langkah 7: Instalasi & Aktivasi Layanan OpenSSH Server
 
@@ -182,7 +180,7 @@ ubuntu@ubuntu-server-1-24:~$ sudo systemctl status ssh
 
 Output yang diharapkan seperti dibawah:
 
-![Phase1.01 gambar 3](/assets/phase-1-sandbox/image/ssh-status.PNG)
+![Phase1.01 gambar 3](../../assets/phase-1-sandbox/image/ssh-status.PNG)
 
 ### Langkah 8: Migrasi Port Layanan SSH (systemd socket)
 
@@ -260,12 +258,11 @@ ubuntu@ubuntu-server-1-24:~$ sudo systemctl restart ssh.socket
 3.  **Mengonfigurasi `resolv.conf` untuk Server 2:**
 
     ```bash
-    # Menghapus symlink atau file resolv.conf yang lama
-    ubuntu@ubuntu-server-2-24:~$ sudo rm /etc/resolv.conf
-
-    # Mengarahkan nameserver ke Server 1
-    ubuntu@ubuntu-server-2-24:~$ sudo echo "nameserver 172.16.2.2" > /etc/resolv.conf
+    # Mengarahkan nameserver ke Server 1 tanpa menghapus file secara manual
+    ubuntu@ubuntu-server-2-24:~$ printf "%s\n" "nameserver 172.16.2.2" | sudo tee /etc/resolv.conf
     ```
+
+    > Perintah `tee` tetap valid di Linux. Tujuan utamanya adalah menulis isi ke file tanpa mengubah format atau menghapus file lama secara berlebihan, sambil tetap menjalankan perintah dengan hak root melalui `sudo`.
 
 ---
 
@@ -281,7 +278,7 @@ ubuntu@ubuntu-server-1-24:~$ ss -tulpn | grep ssh
 C:\Windows\system32> ssh milnandy@172.16.2.2 -p 2201
 ```
 
-![Phase1.01 gambar 4](/assets/phase-1-sandbox/image/ssh.PNG)
+![Phase1.01 gambar 4](../../assets/phase-1-sandbox/image/ssh.PNG)
 
 > _Pada Cmd Windows sukses terhubung ke Server 1 (172.16.2.2) lewat SSH pada port 2201._
 
@@ -292,7 +289,7 @@ C:\Windows\system32> ssh milnandy@172.16.2.2 -p 2201
 C:\Windows\system32> ssh -J milnandy@172.16.2.2:2201 milnandy@172.16.2.3 -p 2201
 ```
 
-![Phase1.01 gambar 5](/assets/phase-1-sandbox/image/ssh-jump.PNG)
+![Phase1.01 gambar 5](../../assets/phase-1-sandbox/image/ssh-jump.PNG)
 
 > _Pada Cmd Windows menampilkan koneksi SSH sukses ke Server 2 (172.16.2.3) melalui Server 1 (172.16.2.2) yang keduanya pada port 2201._
 
@@ -309,3 +306,4 @@ C:\Windows\system32> ssh -J milnandy@172.16.2.2:2201 milnandy@172.16.2.3 -p 2201
 3.  **Koneksi SSH Jumping Gagal ke Server 2:**
     - _Gejala:_ Saat mencoba SSH Jumping ke Server 2, koneksi terputus atau gagal di tengah jalan.
     - _Solusi:_ Verifikasi ulang port SSH Server 2 (`2201`), pastikan _route print_ di Windows Host sudah mencakup rute ke IP `172.16.2.3`, dan uji koneksi internal menggunakan `ping 172.16.2.3` dari Server 1.
+
