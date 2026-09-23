@@ -1,6 +1,6 @@
-﻿# Modul 02: SFTP Jail, Cron Job, & Dashboard Cockpit
+# Modul 02: SFTP Jail, Cron Job, & Dashboard Cockpit
 
-## 📚 Ringkasan & Tujuan
+## 📌 Ringkasan & Tujuan
 
 - **Tujuan Pembelajaran:** Mengamankan protokol transfer berkas menggunakan mekanisme _Chroot Jail_ berbasis grup (_Group-based_), mengotomatiskan tugas sistem menggunakan _Crontab_, serta memantau kesehatan klaster server secara terpusat melalui dasbor web _Cockpit_.
 - **Skenario / Case Study:** Di lingkungan produksi, pihak eksternal atau tim developer membutuhkan akses unggah berkas ke server tanpa memberikan hak akses terminal (_shell login_) yang berisiko. Skenario ini diselesaikan dengan membuat sebuah grup penampung (_sftpgroup_) dengan beberapa akun pengguna di dalamnya. Seluruh akun tersebut diisolasi (_chroot_) ke dalam satu folder direktori bersama (_shared folder_). Selain itu, administrator memantau metrik performa seluruh server secara terpusat melalui satu panel dasbor web Cockpit.
@@ -11,7 +11,7 @@
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 02 Topology](../../assets/phase-1-sandbox/image/diagram-akses-monitoring-editable.drawio.png)
+![Modul 02 Topology](/assets/phase-1-sandbox/image/diagram-akses-monitoring-editable.drawio.png)
 
 > _Diagram pengguna FileZilla/WinSCP dari Windows Host mengakses port 2201 (SFTP Jail) dan browser mengakses port 9090 (Cockpit) pada VM Server 1 yang memantau Server 2._
 
@@ -124,10 +124,10 @@ Jalankan perintah ini pada **kedua server** (Server 1 dan Server 2):
 
 ```bash
 # Menginstal paket Cockpit
-ubuntu@ubuntu-server-1-24:~$ sudo apt update && sudo apt install cockpit -y
+ubuntu@ubuntu-server-x-24:~$ sudo apt update && sudo apt install cockpit -y
 
 # Memulai dan mengaktifkan layanan Cockpit
-ubuntu@ubuntu-server-1-24:~$ sudo systemctl enable --now cockpit
+ubuntu@ubuntu-server-x-24:~$ sudo systemctl enable --now cockpit
 ```
 
 ---
@@ -143,40 +143,39 @@ Buka aplikasi **FileZilla** atau **WinSCP** pada Windows Host, lalu masukkan par
 - **Port:** `2201` (Port custom SSH yang telah diatur di Modul 01)
 - **User / Pass:** `sftpuser1` (atau `sftpuser2`) / _password yang telah dibuat_
 
-![SFTP Filezilla Site Manager Config](../../assets/phase-1-sandbox/image/FileZilla.PNG)
+![SFTP Filezilla Site Manager Config](/assets/phase-1-sandbox/image/FileZilla.PNG)
 
 > _Contoh konfigurasi Site Manager pada FileZilla._
 
-![SFTP WinSCP Config](../../assets/phase-1-sandbox/image/WinSCP.PNG)
+![SFTP WinSCP Config](/assets/phase-1-sandbox/image/WinSCP.PNG)
 
 > _Contoh konfigurasi Session WinSCP._
 
-![SFTP Connection Success Verification](../../assets/phase-1-sandbox/image/FileZilla1.PNG)
+![SFTP Connection Success Verification](/assets/phase-1-sandbox/image/FileZilla1.PNG)
 
 > _Tampilan success connection pada FileZilla._
 
-![SFTP Connection Success Verification](../../assets/phase-1-sandbox/image/WinSCP1.PNG)
+![SFTP Connection Success Verification](/assets/phase-1-sandbox/image/WinSCP1.PNG)
 
 > _Tampilan success connection pada WinSCP._
 
 ### Pengujian Dasbor Terpusat Cockpit
 
-1. Buka browser pada Windows Host, akses alamat dasbor Server 1: `https://172.16.2.2:9090`.
-2. Masuk menggunakan kredensial _root_ atau _sudo user_ pada Server 1.
+1. Buka browser pada Windows Host, akses alamat dasbor Server 1: `https://172.16.2.2:9090`
+2. Masuk menggunakan kredensial _root_ atau _sudo user_ Server 1.
 3. Untuk memantau Server 2 dari satu layar, pilih menu **Dashboard** atau **Server List**, lalu tambahkan koneksi ke Server 2 (`172.16.2.3`).
 
-![Cockpit Web Access Verification](../../assets/phase-1-sandbox/image/Cockpit.PNG)
+![Cockpit Web Access Verification](/assets/phase-1-sandbox/image/Cockpit.PNG)
 
-> _Contoh tampilan halaman login Cockpit yang berhasil dibuka di browser._
+> _[Instruksi]: Masukkan tangkapan layar sukses membuka halaman login Cockpit di web browser._
 
-![Cockpit Multi-Server Integration Verification](../../assets/phase-1-sandbox/image/Cockpit2.PNG)
+![Cockpit Multi-Server Integration Verification](/assets/phase-1-sandbox/image/Cockpit2.PNG)
 
-> _Contoh tampilan panel Cockpit saat Server 1 berhasil mendeteksi dan menampilkan status Server 2 dalam satu dashboard._
+> _[Instruksi]: Masukkan tangkapan layar panel Cockpit Server 1 yang berhasil mendeteksi dan menampilkan status metrik Server 2 di dalam satu dasbor._
 
 ### Log Masalah Terkenal & Solusi (Troubleshooting Log)
 
 1.  **SFTP Gagal Terhubung (Fatal: Connection reset by peer):**
     - _Gejala:_ FileZilla/WinSCP menolak koneksi secara instan sesaat setelah memasukkan kredensial `sftpuser1`.
-    - _Penyebab:_ Hak akses direktori yang didefinisikan sebagai `ChrootDirectory` (`/var/sftp/shared/upload`) tidak dibentuk dengan struktur kepemilikan yang benar, atau direktori root tidak di-set ke `root:root` [7].
-    - _Solusi:_ Periksa izin direktori menggunakan `namei -l /var/sftp/shared/upload`. Pastikan direktori root milik `root:root` dengan izin `755`, dan subfolder `upload` milik `root:sftpgroup` dengan izin `755`.
-
+    - _Penyebab:_ Hak akses direktori yang didefinisikan sebagai `ChrootDirectory` (`/var/sftp/shared/upload`) tidak bersih dimiliki oleh `root` atau struktur kepemilikan grupnya salah [7].
+    - _Solusi:_ Periksa kembali izin direktori menggunakan `namei -l /var/sftp/shared/upload`. Pastikan tingkat direktori root mutlak milik `root:root` dengan izin `755`, dan subfolder _upload_ diatur ke `root:sftpgroup` dengan izin `755`.
