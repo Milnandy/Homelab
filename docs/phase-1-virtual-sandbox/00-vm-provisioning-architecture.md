@@ -2,8 +2,8 @@
 
 ## 📌 Ringkasan & Tujuan
 
-- **Tujuan Pembelajaran:** Melakukan pembuatan (_provisioning_) Virtual Machine dari awal (_scratch_), memahami instalasi OS Linux dengan fitur penyimpanan dinamis LVM [19], serta menerapkan metode efisiensi penyimpanan menggunakan teknik _Linked Clone_ berbasis _Snapshot_ [17, 18].
-- **Skenario / Case Study:** Administrator sistem harus menyiapkan dua buah server Linux dengan sistem operasi yang identik. Melakukan proses instalasi satu per satu dari awal akan memakan banyak waktu (~30-45 menit per server). Skenario ini diatasi dengan melakukan instalasi bersih pada Server 1, membuat _Snapshot_ dasar (_Base_), lalu melakukan kloning bertipe _Linked Clone_ untuk Server 2 [17, 18]. Untuk menghemat RAM host (8 GB), kapasitas RAM VM dinaikkan hanya selama instalasi berat dan diturunkan kembali saat berjalan (_runtime_).
+- **Tujuan Pembelajaran:** Melakukan pembuatan (_provisioning_) Virtual Machine dari awal (_scratch_), memahami instalasi OS Linux dengan fitur penyimpanan dinamis LVM , serta menerapkan metode efisiensi penyimpanan menggunakan teknik _Linked Clone_ berbasis _Snapshot_.
+- **Skenario / Case Study:** Administrator sistem harus menyiapkan dua buah server Linux dengan sistem operasi yang identik. Melakukan proses instalasi satu per satu dari awal akan memakan banyak waktu (~30-45 menit per server). Skenario ini diatasi dengan melakukan instalasi bersih pada Server 1, membuat _Snapshot_ dasar (_Base_), lalu melakukan kloning bertipe _Linked Clone_ untuk Server 2. Untuk menghemat RAM host (8 GB), kapasitas RAM VM dinaikkan hanya selama instalasi berat dan diturunkan kembali saat berjalan (_runtime_).
 - **Kebutuhan Perangkat / Prasyarat:**
   - VMware Workstation Pro (Personal Use)
   - ISO Ubuntu Desktop 24.04 LTS
@@ -55,7 +55,7 @@
 
 ### Langkah 2: Proses Instalasi Interaktif & Aktivasi LVM
 
-- **Penjelasan Singkat:** Menjalankan instalasi Ubuntu dengan memilih opsi penyimpanan dinamis Logical Volume Manager (LVM) [19].
+- **Penjelasan Singkat:** Menjalankan instalasi Ubuntu dengan memilih opsi penyimpanan dinamis Logical Volume Manager (LVM).
 - **Urutan Langkah pada VM Console:**
 
 1.  Nyalakan VM, tunggu hingga layar instalasi bahasa muncul, pilih bahasa sesuai keinginan Anda, lalu klik _Next_.
@@ -64,9 +64,9 @@
     ![Phase1.00 gambar 12](/assets/phase-1-sandbox/image/New-VM1.12.PNG)
 3.  Pilih **Default Installation** (opsi ini sudah memadai untuk kebutuhan pembelajaran sandbox kita).
     ![Phase1.00 gambar 13](/assets/phase-1-sandbox/image/New-VM1.13.PNG)
-4.  Pada halaman _Installation Type_, centang **Erase disk and install Ubuntu**, lalu klik tombol **Advanced Features** [19].
+4.  Pada halaman _Installation Type_, centang **Erase disk and install Ubuntu**, lalu klik tombol **Advanced Features**.
     ![Phase1.00 gambar 14](/assets/phase-1-sandbox/image/New-VM1.15.PNG)
-5.  Di dalam menu Advanced Features, pilih **Use LVM (Logical Volume Manager)**, lalu klik _OK_ [19].
+5.  Di dalam menu Advanced Features, pilih **Use LVM (Logical Volume Manager)**, lalu klik _OK_.
     ![Phase1.00 gambar 15](/assets/phase-1-sandbox/image/New-VM1.16.PNG)
 6.  Lanjutkan proses dengan membuat akun administratif utama, menentukan zona waktu (Region), lalu klik **Install**.
     ![Phase1.00 gambar 16](/assets/phase-1-sandbox/image/New-VM1.17.PNG)
@@ -78,7 +78,7 @@
 
 ### Langkah 3: Optimalisasi Pasca Instalasi & Pembuatan Snapshot Base
 
-- **Penjelasan Singkat:** Menurunkan alokasi memori kembali ke kapasitas operasional (2 GB) dan mengambil gambar kondisi awal sistem (_snapshot_) [17, 18].
+- **Penjelasan Singkat:** Menurunkan alokasi memori kembali ke kapasitas operasional (2 GB) dan mengambil gambar kondisi awal sistem (_snapshot_).
 - **Perintah & Langkah GUI:**
 
 1.  Setelah sistem berhasil masuk ke desktop baru untuk pertama kali, matikan VM secara aman (_Shutdown_).
@@ -93,15 +93,15 @@
 
 ### Langkah 4: Kloning Cepat Server 2 menggunakan Linked Clone
 
-- **Penjelasan Singkat:** Membuat replika Server 2 menggunakan metode _Linked Clone_ berbasis titik _snapshot_ Server 1 untuk menghemat kapasitas harddisk fisik host hingga 90% [17, 18].
+- **Penjelasan Singkat:** Membuat replika Server 2 menggunakan metode _Linked Clone_ berbasis titik _snapshot_ Server 1 untuk menghemat kapasitas harddisk fisik host hingga 90%.
 - **Urutan Langkah pada VMware GUI:**
 
-1.  Klik kanan pada VM `Ubuntu_Server_1.2_24` di menu library VMware, pilih **Manage** -> **Clone...** [18]
+1.  Klik kanan pada VM `Ubuntu_Server_1.2_24` di menu library VMware, pilih **Manage** -> **Clone...**
     ![Phase1.00 gambar 21](/assets/phase-1-sandbox/image/New-VM1.25.PNG)
 2.  Pada jendela Clone Wizard, klik _Next_.
-3.  Di bagian _Clone Source_, pilih opsi **An existing snapshot (powered off only)**, lalu pilih nama snapshot `Fresh Install` yang telah Anda buat sebelumnya. Klik _Next_ [18].
+3.  Di bagian _Clone Source_, pilih opsi **An existing snapshot (powered off only)**, lalu pilih nama snapshot `Fresh Install` yang telah Anda buat sebelumnya. Klik _Next_.
     ![Phase1.00 gambar 22](/assets/phase-1-sandbox/image/New-VM1.26.PNG)
-4.  Di bagian _Clone Type_, pilih **Create a linked clone** (Pilihan mutlak untuk efisiensi penyimpanan) [17, 18].
+4.  Di bagian _Clone Type_, pilih **Create a linked clone** (Pilihan mutlak untuk efisiensi penyimpanan).
     ![Phase1.00 gambar 23](/assets/phase-1-sandbox/image/New-VM1.28.PNG)
 5.  Beri nama VM baru ini `Ubuntu_Server_2.2_24`, tentukan folder penyimpanannya, lalu klik _Finish_.
 
