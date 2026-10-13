@@ -2,7 +2,7 @@
 
 ## 📌 Ringkasan & Tujuan
 
-- **Tujuan Pembelajaran:** Mengonfigurasi web server Apache2 untuk melayani multi-domain (Virtual Hosts), mengonfigurasi Otoritas Sertifikat lokal (_Local Root CA_), serta menerbitkan sertifikat SSL yang mendukung banyak subdomain menggunakan metode _Subject Alternative Name_ (SAN) [10].
+- **Tujuan Pembelajaran:** Mengonfigurasi web server Apache2 untuk melayani multi-domain (Virtual Hosts), mengonfigurasi Otoritas Sertifikat lokal (_Local Root CA_), serta menerbitkan sertifikat SSL yang mendukung banyak subdomain menggunakan metode _Subject Alternative Name_ (SAN).
 - **Skenario / Case Study:** Perusahaan ingin menjalankan dua aplikasi web yang berbeda secara internal: situs portofolio (`www.milnandy.local`) dan game interaktif (`games.milnandy.local`) menggunakan satu IP server tunggal. Selain itu, kedua situs tersebut harus diamankan menggunakan protokol HTTPS tanpa memicu peringatan bahaya (_SSL Warning/Untrusted_) dari browser kerja client.
 - **Kebutuhan Perangkat / Prasyarat:**
   - Server Apache2 (`apache2`)
@@ -88,7 +88,7 @@ ubuntu@ubuntu-server-1-24:/etc/ssl/milnandy.local$ sudo openssl req -x509 -new -
 
 ### Langkah 4: Pembuatan Sertifikat SSL Multi-Domain (SAN)
 
-- **Penjelasan Singkat:** Menyusun konfigurasi DNS perluasan agar satu file sertifikat SSL valid untuk beberapa nama domain sekaligus (Subject Alternative Name) [10].
+- **Penjelasan Singkat:** Menyusun konfigurasi DNS perluasan agar satu file sertifikat SSL valid untuk beberapa nama domain sekaligus (Subject Alternative Name).
 - **Perintah CLI / Konfigurasi:**
 
 ```bash
@@ -96,7 +96,7 @@ ubuntu@ubuntu-server-1-24:/etc/ssl/milnandy.local$ sudo openssl req -x509 -new -
 ubuntu@ubuntu-server-1-24:/etc/ssl/milnandy.local$ sudo nano san.cnf
 ```
 
-Isi dari berkas `san.cnf` [10]:
+Isi dari berkas `san.cnf`:
 
 ```ini
 [req]
@@ -123,7 +123,7 @@ DNS.3 = blog.milnandy.local
 DNS.4 = games.milnandy.local
 ```
 
-Tandatangani sertifikat domain menggunakan Root CA lokal [10]:
+Tandatangani sertifikat domain menggunakan Root CA lokal:
 
 ```bash
 # 1. Membuat Key & CSR (Certificate Signing Request) untuk domain
