@@ -2,7 +2,7 @@
 
 ## 📌 Ringkasan & Tujuan
 
-- **Tujuan Pembelajaran:** Membangun layanan resolusi nama internal menggunakan BIND9, mendesain arsitektur Master-Slave untuk toleransi kesalahan (_fault-tolerance_), serta memahami penulisan rekaman forward dan reverse DNS [8].
+- **Tujuan Pembelajaran:** Membangun layanan resolusi nama internal menggunakan BIND9, mendesain arsitektur Master-Slave untuk toleransi kesalahan (_fault-tolerance_), serta memahami penulisan rekaman forward dan reverse DNS.
 - **Skenario / Case Study:** Dalam infrastruktur berskala besar, kegagalan sistem DNS dapat menyebabkan seluruh aplikasi kehilangan koneksi. Skenario ini diatasi dengan merancang dua server DNS (Master dan Slave). Ketika DNS Master tidak aktif, DNS Slave akan secara otomatis melayani permintaan resolusi nama tanpa intervensi manual.
 - **Kebutuhan Perangkat / Prasyarat:**
   - 2 Unit VM Ubuntu 24.04 LTS (172.16.2.2 dan 172.16.2.3)
@@ -10,9 +10,9 @@
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 03 Topology](/assets/phase-1-sandbox/image/03-dns-master-slave-topology.png)
+![Modul 03 Topology](/assets/phase-1-sandbox/image/dns-zone-transfer-master-slave-editable.drawio.png)
 
-> _[Placeholder Gambar]: Diagram alur komunikasi DNS Zone Transfer menggunakan port TCP 53 dari server Master (172.16.2.2) ke server Slave (172.16.2.3)._
+> _Diagram alur komunikasi DNS Zone Transfer menggunakan port TCP 53 dari server Master (172.16.2.2) ke server Slave (172.16.2.3)._
 
 ### Tabel Pengamatan IP / Interface
 
@@ -164,9 +164,9 @@ ubuntu@ubuntu-server-1-24:~$ nslookup 172.16.2.2
 ### Log Masalah Terkenal & Solusi (Troubleshooting Log)
 
 1.  **Reverse Lookup Menghasilkan Error NXDOMAIN:**
-    - _Gejala:_ Perintah `nslookup 172.16.2.2` tidak menghasilkan domain `www.milnandy.local` melainkan error `NXDOMAIN` [8].
-    - _Solusi:_ Pada berkas reverse zona kelas C (`/24`), kolom pertama PTR record tidak boleh diisi dengan alamat IP penuh (`172.16.2.2`), melainkan wajib diisi dengan oktet terakhir saja dari IP host tersebut (angka `2`) [8].
+    - _Gejala:_ Perintah `nslookup 172.16.2.2` tidak menghasilkan domain `www.milnandy.local` melainkan error `NXDOMAIN`.
+    - _Solusi:_ Pada berkas reverse zona kelas C (`/24`), kolom pertama PTR record tidak boleh diisi dengan alamat IP penuh (`172.16.2.2`), melainkan wajib diisi dengan oktet terakhir saja dari IP host tersebut (angka `2`).
 2.  **VM Kehilangan Koneksi Internet Luar Setelah Bypass resolv.conf:**
     - _Gejala:_ Perintah `apt update` gagal karena nama host repositori Ubuntu tidak dapat ditemukan.
-    - _Penyebab:_ Bypassing `resolv.conf` langsung mengarah ke DNS lokal yang belum dikonfigurasi dengan _forwarders_ internet [9].
-    - _Solusi:_ Edit berkas `/etc/resolv.conf` dan sisipkan alamat DNS server publik (`8.8.8.8`) sebagai resolver sekunder di baris berikutnya [9].
+    - _Penyebab:_ Bypassing `resolv.conf` langsung mengarah ke DNS lokal yang belum dikonfigurasi dengan _forwarders_ internet.
+    - _Solusi:_ Edit berkas `/etc/resolv.conf` dan sisipkan alamat DNS server publik (`8.8.8.8`) sebagai resolver sekunder di baris berikutnya.

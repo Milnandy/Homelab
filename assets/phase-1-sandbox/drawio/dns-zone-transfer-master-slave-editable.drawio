@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mxfile host="app.diagrams.net" modified="2026-10-12T10:10:00.000Z" agent="ChatGPT" version="24.7.17" type="device">
+  <diagram id="dns-zone-transfer" name="DNS Zone Transfer">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="DNS Zone Transfer" style="text;html=1;align=center;verticalAlign=middle;fontSize=26;fontStyle=1;fontColor=#14243A;" vertex="1" parent="1">
+          <mxGeometry x="300" y="24" width="500" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="Replikasi zona DNS melalui TCP port 53" style="text;html=1;align=center;verticalAlign=middle;fontSize=15;fontColor=#52657A;" vertex="1" parent="1">
+          <mxGeometry x="300" y="68" width="500" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="master" value="&lt;b&gt;DNS MASTER (PRIMARY)&lt;/b&gt;&lt;br&gt;&lt;br&gt;ubuntu-server-1-24&lt;br&gt;&lt;br&gt;&lt;b&gt;IP:&lt;/b&gt; 172.16.2.2&lt;br&gt;&lt;b&gt;Zone:&lt;/b&gt; milnandy.local" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF3FF;strokeColor=#4F79B8;strokeWidth=2;fontColor=#17365D;fontSize=16;align=center;verticalAlign=middle;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="90" y="160" width="350" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="slave" value="&lt;b&gt;DNS SLAVE (SECONDARY)&lt;/b&gt;&lt;br&gt;&lt;br&gt;ubuntu-server-2-24&lt;br&gt;&lt;br&gt;&lt;b&gt;IP:&lt;/b&gt; 172.16.2.3&lt;br&gt;&lt;b&gt;Zone:&lt;/b&gt; milnandy.local (Replicate)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1ECFF;strokeColor=#7956C8;strokeWidth=2;fontColor=#35215F;fontSize=16;align=center;verticalAlign=middle;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="660" y="160" width="350" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="transfer" value="&lt;b&gt;DNS Zone Transfer&lt;/b&gt;&lt;br&gt;TCP port 53&lt;br&gt;Master → Slave" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D97706;strokeWidth=3;endArrow=block;endFill=1;fontSize=15;fontStyle=1;fontColor=#9A4D00;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="master" target="slave">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="master-note" value="Sumber zona DNS&lt;br&gt;Primary / authoritative" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFE;strokeColor=#A9C3E5;fontColor=#344B66;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="110" y="375" width="310" height="58" as="geometry"/>
+        </mxCell>
+        <mxCell id="slave-note" value="Salinan zona DNS&lt;br&gt;Secondary / replicated" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FAF8FF;strokeColor=#C6B6ED;fontColor=#493878;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="680" y="375" width="310" height="58" as="geometry"/>
+        </mxCell>
+        <mxCell id="table-title" value="Tabel Pengamatan IP / Interface" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#244A73;strokeColor=#244A73;fontColor=#FFFFFF;fontSize=17;fontStyle=1;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="70" y="480" width="960" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="cell-0-0" value="Device Name" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DCE9F7;strokeColor=#A9BED6;strokeWidth=1;fontColor=#17365D;fontSize=14;fontStyle=1;align=left;verticalAlign=middle;spacingLeft=9;" vertex="1" parent="1">
+          <mxGeometry x="70" y="518" width="260" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="cell-0-1" value="Peran" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DCE9F7;strokeColor=#A9BED6;strokeWidth=1;fontColor=#17365D;fontSize=14;fontStyle=1;align=left;verticalAlign=middle;spacingLeft=9;" vertex="1" parent="1">
+          <mxGeometry x="330" y="518" width="190" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="cell-0-2" value="IP Address" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DCE9F7;strokeColor=#A9BED6;strokeWidth=1;fontColor=#17365D;fontSize=14;fontStyle=1;align=left;verticalAlign=middle;spacingLeft=9;" vertex="1" parent="1">
+          <mxGeometry x="520" y="518" width="180" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="cell-0-3" value="Domain Terdaftar" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DCE9F7;strokeColor=#A9BED6;strokeWidth=1;fontColor=#17365D;fontSize=14;fontStyle=1;align=left;verticalAlign=middle;spacingLeft=9;" vertex="1" parent="1">
+          <mxGeometry x="700" y="518" width="330" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="cell-1-0" value="ubuntu-server-1-24" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9BED6;strokeWidth=1;fontColor=#17365D;fontSize=13;fontStyle=0;align=left;verticalAlign=middle;spacingLeft=9;" vertex="1" parent="1">
+          <mxGeometry x="70" y="562" width="260" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="cell-1-1" value="DNS Master (Primary)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9BED6;strokeWidth=1;fontColor=#17365D;fontSize=13;fontStyle=0;align=left;verticalAlign=middle;spacingLeft=9;" vertex="1" parent="1">
+          <mxGeometry x="330" y="562" width="190" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="cell-1-2" value="172.16.2.2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9BED6;strokeWidth=1;fontColor=#17365D;fontSize=13;fontStyle=0;align=left;verticalAlign=middle;spacingLeft=9;" vertex="1" parent="1">
+          <mxGeometry x="520" y="562" width="180" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="cell-1-3" value="milnandy.local" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9BED6;strokeWidth=1;fontColor=#17365D;fontSize=13;fontStyle=0;align=left;verticalAlign=middle;spacingLeft=9;" vertex="1" parent="1">
+          <mxGeometry x="700" y="562" width="330" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="cell-2-0" value="ubuntu-server-2-24" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;strokeWidth=1;fontColor=#17365D;fontSize=13;fontStyle=0;align=left;verticalAlign=middle;spacingLeft=9;" vertex="1" parent="1">
+          <mxGeometry x="70" y="610" width="260" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="cell-2-1" value="DNS Slave (Secondary)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;strokeWidth=1;fontColor=#17365D;fontSize=13;fontStyle=0;align=left;verticalAlign=middle;spacingLeft=9;" vertex="1" parent="1">
+          <mxGeometry x="330" y="610" width="190" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="cell-2-2" value="172.16.2.3" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;strokeWidth=1;fontColor=#17365D;fontSize=13;fontStyle=0;align=left;verticalAlign=middle;spacingLeft=9;" vertex="1" parent="1">
+          <mxGeometry x="520" y="610" width="180" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="cell-2-3" value="milnandy.local (Replicate)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;strokeWidth=1;fontColor=#17365D;fontSize=13;fontStyle=0;align=left;verticalAlign=middle;spacingLeft=9;" vertex="1" parent="1">
+          <mxGeometry x="700" y="610" width="330" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="note" value="Catatan: transfer zona DNS umumnya menggunakan TCP port 53. Pastikan konfigurasi allow-transfer / ACL pada Master mengizinkan alamat IP Slave." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7E8;strokeColor=#E8B566;fontColor=#704214;fontSize=13;align=left;verticalAlign=middle;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="70" y="690" width="960" height="58" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
