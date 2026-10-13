@@ -1,10 +1,8 @@
----
-
 # Modul 03: Redundansi DNS Server BIND9 Master-Slave
 
 ## 📌 Ringkasan & Tujuan
 
-- **Tujuan Pembelajaran:** Membangun layanan resolusi nama internal menggunakan BIND9, mendesain arsitektur Master-Slave untuk toleransi kesalahan (*fault-tolerance*), mengatur *forwarders* dan *recursion* keamanan jaringan, serta menerapkan teknik instalasi BIND9 secara *offline* (menggunakan *cache* paket `.deb`) pada Server Slave yang diisolasi akses internetnya.
+- **Tujuan Pembelajaran:** Membangun layanan resolusi nama internal menggunakan BIND9, mendesain arsitektur Master-Slave untuk toleransi kesalahan (_fault-tolerance_), mengatur _forwarders_ dan _recursion_ keamanan jaringan, serta menerapkan teknik instalasi BIND9 secara _offline_ (menggunakan _cache_ paket `.deb`) pada Server Slave yang diisolasi akses internetnya.
 - **Skenario / Case Study:** Dalam infrastruktur berskala besar, kegagalan sistem DNS dapat menyebabkan seluruh aplikasi kehilangan koneksi. Skenario ini diatasi dengan merancang dua server DNS (Master dan Slave). Karena Server Slave diisolasi akses internetnya, paket instalasi BIND9 ditransfer secara lokal dari Server Master. Ketika DNS Master tidak aktif, DNS Slave akan secara otomatis melayani permintaan resolusi nama tanpa intervensi manual.
 - **Kebutuhan Perangkat / Prasyarat:**
   - 2 Unit VM Ubuntu 24.04 LTS (Master: 172.16.2.2, Slave: 172.16.2.3)
@@ -12,9 +10,9 @@
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 03 Topology](/assets/phase-1-sandbox/image/03-dns-master-slave-topology.png)
+![Modul 03 Topology](/assets/phase-1-sandbox/image/dns-zone-transfer-master-slave-editable.drawio.png)
 
-> _[Placeholder Gambar]: Diagram alur komunikasi DNS Zone Transfer menggunakan port TCP 53 dari server Master (172.16.2.2) ke server Slave (172.16.2.3)._
+> _Diagram alur komunikasi DNS Zone Transfer menggunakan port TCP 53 dari server Master (172.16.2.2) ke server Slave (172.16.2.3)._
 
 ### Tabel Pengamatan IP / Interface
 
@@ -285,7 +283,7 @@ ubuntu@ubuntu-server-1-24:~$ dig archive.ubuntu.com @127.0.0.1
 
 1.  **Reverse Lookup Menghasilkan Error `NXDOMAIN`:**
     - _Gejala:_ Perintah `nslookup 172.16.2.2` tidak menghasilkan domain `www.milnandy.local` melainkan error `NXDOMAIN`.
-    - _Solusi:_ Pada berkas reverse zona kelas C (`/24`), kolom pertama PTR record tidak boleh diisi dengan alamat IP penuh (`172.16.2.2`), melainkan wajib diisi dengan oktet terakhir saja dari IP host tersebut (angka `2` dan `3`) [8].
+    - _Solusi:_ Pada berkas reverse zona kelas C (`/24`), kolom pertama PTR record tidak boleh diisi dengan alamat IP penuh (`172.16.2.2`), melainkan wajib diisi dengan oktet terakhir saja dari IP host tersebut (angka `2` dan `3`).
 2.  **Zona Slave Gagal Melakukan Transfer (_Zone Transfer Failed_):**
     - _Gejala:_ Berkas salinan zona tidak kunjung muncul di `/var/cache/bind/` pada Server Slave.
     - _Penyebab:_ Direktori `/var/cache/bind` tidak memiliki izin tulis (_write permission_) untuk pengguna daemon `bind`, atau parameter `allow-transfer` di Master belum menunjuk ke IP Slave (`172.16.2.3`).
