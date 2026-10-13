@@ -177,5 +177,5 @@ Buka aplikasi **FileZilla** atau **WinSCP** pada Windows Host, lalu masukkan par
 
 1.  **SFTP Gagal Terhubung (Fatal: Connection reset by peer):**
     - _Gejala:_ FileZilla/WinSCP menolak koneksi secara instan sesaat setelah memasukkan kredensial `sftpuser1`.
-    - _Penyebab:_ Hak akses direktori yang didefinisikan sebagai `ChrootDirectory` (`/var/sftp/shared/upload`) tidak bersih dimiliki oleh `root` atau struktur kepemilikan grupnya salah [7].
+    - _Penyebab:_ Hak akses direktori yang didefinisikan sebagai `ChrootDirectory` (`/var/sftp/shared/upload`) tidak bersih dimiliki oleh `root` atau struktur kepemilikan grupnya salah.
     - _Solusi:_ Periksa kembali izin direktori menggunakan `namei -l /var/sftp/shared/upload`. Pastikan tingkat direktori root mutlak milik `root:root` dengan izin `755`, dan subfolder _upload_ diatur ke `root:sftpgroup` dengan izin `755`.
