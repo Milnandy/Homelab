@@ -13,7 +13,7 @@ _Fokus:_ Menguasai administrasi sistem Linux, manajemen paket, penyimpanan dinam
 - **[Modul 1.0: Pembuatan VM](./docs/phase-1-virtual-sandbox/00-vm-provisioning-architecture.md)**
 - **[Modul 1.1: Jaringan Dasar & SSH Custom Socket](./docs/phase-1-virtual-sandbox/01-basic-networking.md)**
 - **[Modul 1.2: SFTP Jail, Cron Job, & Cockpit Dashboard](./docs/phase-1-virtual-sandbox/02-sftp-cron-cockpit.md)**
-- **Modul 1.3: Redundansi DNS Server BIND9 Master-Slave**
+- **[Modul 1.3: Redundansi DNS Server BIND9 Master-Slave](./docs/phase-1-virtual-sandbox/03-dns-master-slave.md)**
 - **Modul 1.4: Web Server Apache2, Virtual Hosts, & SSL SAN**
 - **Modul 1.5: High Availability & Load Balancing (HAProxy vs Nginx)**
 - **Modul 1.6: File Sharing Enterprise dengan Samba (Security & ACL)**
