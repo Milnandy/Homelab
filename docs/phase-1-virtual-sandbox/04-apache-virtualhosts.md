@@ -1,9 +1,17 @@
+Berikut adalah perbaikan pada **Modul 04**. Saya telah menambahkan catatan sumber kredit template open-source (_Start Bootstrap_) pada bagian ringkasan/pengenalan, serta mengoreksi perintah `scp` pengiriman paket Nginx ke Server 2 agar menggunakan direktori `/tmp` terlebih dahulu (jika menggunakan user non-root `milnandy`), lalu dipindahkan menggunakan `sudo mv` ke `/var/cache/apt/archives/`.
+
+---
+
 # Modul 04: Apache2 Web Server, Virtual Hosts, & SSL SAN
 
 ## 📌 Ringkasan & Tujuan
 
-- **Tujuan Pembelajaran:** Mengonfigurasi web server Apache2 untuk melayani multi-domain (_Virtual Hosts_), membangun infrastruktur PKI (_Public Key Infrastructure_) tingkat enterprise menggunakan Otoritas Sertifikat lokal (_Local Root CA_), menerbitkan sertifikat SSL _wildcard/multi-domain_ berbasis _Subject Alternative Name_ (SAN) [10], melakukan transfer paket _offline_ (Nginx) ke Server 2, serta mengonfigurasi _routing_ tingkat lanjut pada sistem Host Windows.
+- **Tujuan Pembelajaran:** Mengonfigurasi web server Apache2 untuk melayani multi-domain (_Virtual Hosts_), membangun infrastruktur PKI (_Public Key Infrastructure_) tingkat enterprise menggunakan Otoritas Sertifikat lokal (_Local Root CA_), menerbitkan sertifikat SSL _wildcard/multi-domain_ berbasis _Subject Alternative Name_ (SAN) [10], melakukan transfer paket _offline_ (Nginx) ke Server 2, serta mengonfigurasi _routing_ tingkat lanjut pada sistem host Windows.
 - **Skenario / Case Study:** Perusahaan ingin menjalankan aplikasi web berbeda secara internal: situs portofolio (`www.milnandy.local`) dan blog admin (`blog.milnandy.local`) menggunakan satu IP server tunggal di balik protokol HTTPS yang aman. Agar tidak memicu peringatan keamanan (_SSL Warning/Untrusted_) dari browser kerja client, administrator membangun _Root CA_ internal dan mendaftarkannya ke dalam _Windows Trusted Root Certificate Store_. Selain itu, Server 2 disiapkan secara _offline_ untuk menjalankan web server Nginx dengan subdomain terpisah (`web2.milnandy.local`).
+- **Keterangan Templating / Sumber Proyek:**
+  Proyek web statis dalam modul ini dimodifikasi dari templat _open-source_ profesional:
+  - [Start Bootstrap Creative](https://github.com/StartBootstrap/startbootstrap-creative) (Digunakan untuk portofolio utama `www.milnandy.local`)
+  - [Start Bootstrap Resume](https://github.com/StartBootstrap/startbootstrap-resume) (Digunakan untuk situs blog/resume `blog.milnandy.local`)
 - **Kebutuhan Perangkat / Prasyarat:**
   - Server Apache2 (`apache2`) & Nginx (`nginx`)
   - OpenSSL Utility
@@ -68,7 +76,7 @@ ubuntu@ubuntu-server-1-24:~$ sudo unzip startbootstrap-creative-master.zip
 
 ### Langkah 3: Konfigurasi Virtual Host HTTP (`www.milnandy.local`)
 
-- **Penjelasan Singkat:** Menyalin konfigurasi bawaan Apache, mengubah direktorinya ke folder portofolio, dan mendefinisikan _ServerName_.
+- **Penjelasan Singkat:** Menyisipkan konfigurasi bawaan Apache, mengubah direktorinya ke folder portofolio, dan mendefinisikan _ServerName_.
 - **Perintah CLI / Konfigurasi:**
 
 ```bash
@@ -210,7 +218,10 @@ ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo chmod 600 private/web-server
 ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo openssl req -new -key private/web-server.key -out requests/web-server.csr -config web-server.cnf
 
 # Tanda tangani menggunakan Root CA (masa aktif 1 hari / perbaruan latihan)
-ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo openssl x509 -req -in requests/web-server.csr -CA certs/root-ca.crt -CAkey private/root-ca.key -CAcreateserial -out certs/web-server.crt -days 1 -sha256 -extfile web-server.cnf -extensions req_ext
+ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo openssl x509 -req -in requests/web-server.csr \
+  -CA certs/root-ca.crt -CAkey private/root-ca.key -CAcreateserial \
+  -out certs/web-server.crt -days 1 -sha256 \
+  -extfile web-server.cnf -extensions req_ext
 ```
 
 Mengatur izin keamanan file sertifikat:
@@ -225,7 +236,7 @@ ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo chmod 644 certs/web-server.c
 
 ### Langkah 6: Konfigurasi Virtual Host HTTPS (`blog.milnandy.local`)
 
-- **Penjelasan Singkat:** Mengunduh template web blog, mengonfigurasi Apache VirtualHost port 443 dengan sertifikat SSL buatan sendiri.
+- **Penjelasan Singkat:** Mengunduh template web blog dari [Start Bootstrap Resume](https://github.com/StartBootstrap/startbootstrap-resume), mengonfigurasi Apache VirtualHost port 443 dengan sertifikat SSL buatan sendiri.
 - **Perintah CLI / Konfigurasi:**
 
 ```bash
@@ -264,7 +275,7 @@ ubuntu@ubuntu-server-1-24:~$ sudo systemctl restart apache2
 
 ### Langkah 7: Instalasi Offline Nginx pada Server 2 (Slave)
 
-- **Penjelasan Singkat:** Karena Server 2 diisolasi internetnya (_disconnected_), instalasi Nginx dilakukan dengan mengunduh file `.deb` di Server 1, mentransfernya via SCP, lalu menginstalnya secara lokal di Server 2.
+- **Penjelasan Singkat:** Karena Server 2 diisolasi internetnya (_disconnected_), instalasi Nginx dilakukan dengan mengunduh file `.deb` di Server 1, mentransfernya ke folder `/tmp` via SCP menggunakan user non-root `milnandy`, lalu memindahkannya menggunakan `sudo mv` ke `/var/cache/apt/archives/` sebelum diinstal secara lokal di Server 2 menggunakan `dpkg`.
 - **Perintah CLI / Konfigurasi:**
 
 Pada **Server 1**:
@@ -274,15 +285,16 @@ Pada **Server 1**:
 ubuntu@ubuntu-server-1-24:~$ sudo apt update
 ubuntu@ubuntu-server-1-24:~$ sudo apt-get install --download-only --reinstall nginx -y
 
-# Kirim file paket .deb ke folder /var/cache/apt/archives/ di Server 2 via port SSH custom (2201)
-ubuntu@ubuntu-server-1-24:~$ sudo scp -P 2201 /var/cache/apt/archives/*nginx*.deb milnandy@172.16.2.3:/var/cache/apt/archives/
+# Kirim file paket .deb ke folder /tmp di Server 2 via port SSH custom (2201) menggunakan user milnandy
+ubuntu@ubuntu-server-1-24:~$ sudo scp -P 2201 /var/cache/apt/archives/*nginx*.deb milnandy@172.16.2.3:/tmp/
 ```
 
 Pada **Server 2 (`ubuntu-server-2-24`)**:
 
 ```bash
-# Masuk ke direktori cache lalu instal secara offline menggunakan dpkg
+# Pindahkan paket dari /tmp ke direktori cache apt sistem, lalu instal secara offline menggunakan dpkg
 ubuntu@ubuntu-server-2-24:~$ cd /var/cache/apt/archives/
+ubuntu@ubuntu-server-2-24:/var/cache/apt/archives$ sudo mv /tmp/*nginx*.deb .
 ubuntu@ubuntu-server-2-24:/var/cache/apt/archives$ sudo dpkg -i *nginx*.deb
 
 # Verifikasi status layanan Nginx
@@ -309,12 +321,12 @@ Muat ulang Nginx: `sudo systemctl restart nginx`.
 
 ### Instalasi Root CA pada Windows Host (Agar Hijau/Trusted)
 
-1. Salin sertifikat _Root CA_ dari server ke home folder:
+1. Salin sertifikat _Root CA_ dari server ke direktori home pengguna:
    ```bash
    ubuntu@ubuntu-server-1-24:~$ cp -p /etc/ssl/private-ca/certs/root-ca.crt /home/milnandy
    ubuntu@ubuntu-server-1-24:~$ sudo chown milnandy:milnandy /home/milnandy/root-ca.crt
    ```
-2. Tarik file `root-ca.crt` ke komputer host Windows menggunakan SCP:
+2. Tarik file `root-ca.crt` ke komputer host Windows menggunakan SCP dari CMD:
    ```cmd
    C:\Windows\system32> scp -P 2201 -J abrar@192.168.230.128 milnandy@172.16.2.2:root-ca.crt D:\KumpulanFolder\Technology\
    ```
@@ -339,4 +351,4 @@ Jika Anda menggunakan antivirus Kaspersky dan browser menampilkan peringatan ser
 
 1.  **Gagal Restart Apache (AH00557: apr_sockaddr_info_get failed):**
     - _Gejala:_ Muncul pesan peringatan _Could not reliably determine the server's fully qualified domain name_ saat Apache dinyalakan.
-    - _Solusi:_ Hal ini bersifat informatif (_warning_) dan tidak menghentikan layanan. Namun, Anda bisa menghilangkannya secara permanen dengan mendefinisikan `ServerName localhost` atau `ServerName 127.0.0.1` di dalam berkas konfigurasi global `/etc/apache2/apache2.conf`.
+    - _Solusi:_ Hal ini bersifat informatif (_warning_) dan tidak menghentikan layanan. Namun, Anda bisa membuangnya secara permanen dengan mendefinisikan `ServerName localhost` atau `ServerName 127.0.0.1` di dalam berkas konfigurasi global `/etc/apache2/apache2.conf`.
