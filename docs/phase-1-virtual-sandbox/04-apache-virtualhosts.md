@@ -2,7 +2,7 @@
 
 ## 📌 Ringkasan & Tujuan
 
-- **Tujuan Pembelajaran:** Mengonfigurasi web server Apache2 untuk melayani multi-domain (_Virtual Hosts_), membangun infrastruktur PKI (_Public Key Infrastructure_) tingkat enterprise menggunakan Otoritas Sertifikat lokal (_Local Root CA_), menerbitkan sertifikat SSL _wildcard/multi-domain_ berbasis _Subject Alternative Name_ (SAN) [10], melakukan transfer paket _offline_ (Nginx) ke Server 2, serta mengonfigurasi _routing_ tingkat lanjut pada sistem host Windows.
+- **Tujuan Pembelajaran:** Mengonfigurasi web server Apache2 untuk melayani multi-domain (_Virtual Hosts_), membangun infrastruktur PKI (_Public Key Infrastructure_) tingkat enterprise menggunakan Otoritas Sertifikat lokal (_Local Root CA_), menerbitkan sertifikat SSL _wildcard/multi-domain_ berbasis _Subject Alternative Name_ (SAN), melakukan transfer paket _offline_ (Nginx) ke Server 2, serta mengonfigurasi _routing_ tingkat lanjut pada sistem host Windows.
 - **Skenario / Case Study:** Perusahaan ingin menjalankan aplikasi web berbeda secara internal: situs portofolio (`www.milnandy.local`) dan blog admin (`blog.milnandy.local`) menggunakan satu IP server tunggal di balik protokol HTTPS yang aman. Agar tidak memicu peringatan keamanan (_SSL Warning/Untrusted_) dari browser kerja client, administrator membangun _Root CA_ internal dan mendaftarkannya ke dalam _Windows Trusted Root Certificate Store_. Selain itu, Server 2 disiapkan secara _offline_ untuk menjalankan web server Nginx dengan subdomain terpisah (`web2.milnandy.local`).
 - **Keterangan Templating / Sumber Proyek:**
   Proyek web statis dalam modul ini dimodifikasi dari templat _open-source_ profesional:
@@ -129,7 +129,7 @@ _Uji coba:_ Buka browser Microsoft Edge / Google Chrome, lalu akses `http://www.
 
 ### Langkah 5: Pembuatan Infrastruktur PKI & SSL SAN (Enterprise Standard)
 
-- **Penjelasan Singkat:** Membangun _Root CA_ mandiri beserta pembuatan sertifikat web dengan ekstensi SAN (_Subject Alternative Name_) agar browser mempercayai multi-domain/wildcard [10].
+- **Penjelasan Singkat:** Membangun _Root CA_ mandiri beserta pembuatan sertifikat web dengan ekstensi SAN (_Subject Alternative Name_) agar browser mempercayai multi-domain/wildcard.
 - **Perintah CLI / Konfigurasi:**
 
 Membuat struktur direktori privat FHS:
