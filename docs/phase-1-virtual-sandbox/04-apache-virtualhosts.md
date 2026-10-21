@@ -1,7 +1,3 @@
-Berikut adalah perbaikan pada **Modul 04**. Saya telah menambahkan catatan sumber kredit template open-source (_Start Bootstrap_) pada bagian ringkasan/pengenalan, serta mengoreksi perintah `scp` pengiriman paket Nginx ke Server 2 agar menggunakan direktori `/tmp` terlebih dahulu (jika menggunakan user non-root `milnandy`), lalu dipindahkan menggunakan `sudo mv` ke `/var/cache/apt/archives/`.
-
----
-
 # Modul 04: Apache2 Web Server, Virtual Hosts, & SSL SAN
 
 ## 📌 Ringkasan & Tujuan
