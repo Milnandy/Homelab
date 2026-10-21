@@ -2,191 +2,341 @@
 
 ## 📌 Ringkasan & Tujuan
 
-- **Tujuan Pembelajaran:** Mengonfigurasi web server Apache2 untuk melayani multi-domain (Virtual Hosts), mengonfigurasi Otoritas Sertifikat lokal (_Local Root CA_), serta menerbitkan sertifikat SSL yang mendukung banyak subdomain menggunakan metode _Subject Alternative Name_ (SAN) [10].
-- **Skenario / Case Study:** Perusahaan ingin menjalankan dua aplikasi web yang berbeda secara internal: situs portofolio (`www.milnandy.local`) dan game interaktif (`games.milnandy.local`) menggunakan satu IP server tunggal. Selain itu, kedua situs tersebut harus diamankan menggunakan protokol HTTPS tanpa memicu peringatan bahaya (_SSL Warning/Untrusted_) dari browser kerja client.
+- **Tujuan Pembelajaran:** Mengonfigurasi web server Apache2 untuk melayani multi-domain (_Virtual Hosts_), membangun infrastruktur PKI (_Public Key Infrastructure_) tingkat enterprise menggunakan Otoritas Sertifikat lokal (_Local Root CA_), menerbitkan sertifikat SSL _wildcard/multi-domain_ berbasis _Subject Alternative Name_ (SAN) [10], melakukan transfer paket _offline_ (Nginx) ke Server 2, serta mengonfigurasi _routing_ tingkat lanjut pada sistem Host Windows.
+- **Skenario / Case Study:** Perusahaan ingin menjalankan aplikasi web berbeda secara internal: situs portofolio (`www.milnandy.local`) dan blog admin (`blog.milnandy.local`) menggunakan satu IP server tunggal di balik protokol HTTPS yang aman. Agar tidak memicu peringatan keamanan (_SSL Warning/Untrusted_) dari browser kerja client, administrator membangun _Root CA_ internal dan mendaftarkannya ke dalam _Windows Trusted Root Certificate Store_. Selain itu, Server 2 disiapkan secara _offline_ untuk menjalankan web server Nginx dengan subdomain terpisah (`web2.milnandy.local`).
 - **Kebutuhan Perangkat / Prasyarat:**
-  - Server Apache2 (`apache2`)
+  - Server Apache2 (`apache2`) & Nginx (`nginx`)
   - OpenSSL Utility
-  - Arsip zip situs web (Portofolio & Game 2048)
+  - Arsip zip situs web (Bootstrap Template)
+  - Akses Administrator pada Windows Host
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 04 Topology](../assets/04-apache-virtualhosts-topology.png)
+![Modul 04 Topology](../assets/phase-1-sandbox/04-apache-virtualhosts-topology.png)
 
-> _[Placeholder Gambar]: Skema akses HTTPS dari browser Windows Client ke domain Virtual Host pada Server 1, yang divalidasi oleh Root CA yang telah terinstal pada Windows Certificate Store._
+> _[Placeholder Gambar]: Skema akses HTTPS dari browser Windows Client ke domain Virtual Host pada Server 1, yang divalidasi oleh Root CA internal yang terinstal pada Windows Trusted Root Store._
+
+### Tabel Pengamatan IP / Interface & Layanan Web
+
+| Device Name        | Layanan Web     | Port | Dokumen Root Direktori    | Catatan                                     |
+| ------------------ | --------------- | ---- | ------------------------- | ------------------------------------------- |
+| ubuntu-server-1-24 | Apache2 (HTTP)  | 80   | `/var/www/www.milnandy/`  | Situs Portofolio Utama                      |
+| ubuntu-server-1-24 | Apache2 (HTTPS) | 443  | `/var/www/blog.milnandy/` | Blog/Admin Panel terenkripsi SSL            |
+| ubuntu-server-2-24 | Nginx (HTTP)    | 80   | `/var/www/html/`          | Server Web Sekunder (`web2.milnandy.local`) |
 
 ---
 
 ## 🚀 Langkah-Langkah Konfigurasi (Step-by-Step)
 
-### Langkah 1: Pengiriman Konten & Ekstraksi Web
+### Langkah 1: Instalasi Apache2 & Penyiapan Struktur Direktori
 
-- **Penjelasan Singkat:** Mentransfer berkas web statis dari komputer host menggunakan SCP custom port, lalu mengekstraknya ke direktori Apache.
+- **Penjelasan Singkat:** Menginstal web server Apache2 pada Server 1 dan menyiapkan struktur direktori standar enterprise FHS (_Filesystem Hierarchy Standard_).
+- **Perintah CLI / Konfigurasi:**
+
+```bash
+# Memperbarui dan menginstal Apache2
+ubuntu@ubuntu-server-1-24:~$ sudo apt update && sudo apt install apache2 -y
+
+# Memverifikasi status layanan Apache2
+ubuntu@ubuntu-server-1-24:~$ sudo systemctl status apache2
+```
+
+Membuat direktori penyimpanan root web:
+
+```bash
+ubuntu@ubuntu-server-1-24:~$ sudo mkdir -p /var/www/www.milnandy
+```
+
+### Langkah 2: Transfer Arsip Web dari Host ke Server
+
+- **Penjelasan Singkat:** Memindahkan file arsip (_zip_) template web dari komputer host ke direktori sementara `/tmp` di Server 1 menggunakan SCP melalui port custom `2201`.
 - **Perintah CLI / Konfigurasi:**
 
 ```cmd
-:: Transfer arsip portofolio menggunakan SCP port 2201
-C:\Windows\system32> scp -P 2201 startbootstrap-creative-master.zip milnandy@172.16.1.2:~
+:: Jalankan di Command Prompt Windows Host
+C:\Windows\system32> cd /d D:\KumpulanFolder\Technology
+C:\Windows\system32> scp -P 2201 startbootstrap-creative-master.zip milnandy@172.16.2.2:/tmp
 ```
 
-Kembali ke server Ubuntu:
+Kembali ke terminal Server 1, ekstrak file ke folder web:
 
 ```bash
-# Memindahkan dan mengekstrak berkas web ke folder Apache
-ubuntu@ubuntu-server-1-24:~$ sudo mv ~/startbootstrap-creative-master.zip /tmp/
-ubuntu@ubuntu-server-1-24:~$ cd /tmp && unzip startbootstrap-creative-master.zip
-ubuntu@ubuntu-server-1-24:~$ sudo mkdir -p /var/www/www.milnandy
-ubuntu@ubuntu-server-1-24:~$ sudo mv startbootstrap-creative-master /var/www/www.milnandy/
+ubuntu@ubuntu-server-1-24:~$ cd /var/www/www.milnandy
+ubuntu@ubuntu-server-1-24:~$ sudo mv /tmp/startbootstrap-creative-master.zip .
+ubuntu@ubuntu-server-1-24:~$ sudo unzip startbootstrap-creative-master.zip
 ```
 
-### Langkah 2: Konfigurasi Virtual Hosts Apache2
+### Langkah 3: Konfigurasi Virtual Host HTTP (`www.milnandy.local`)
 
-- **Penjelasan Singkat:** Menduplikasi file konfigurasi default dan menyesuaikan parameter `ServerName` serta `DocumentRoot` untuk masing-masing situs.
+- **Penjelasan Singkat:** Menyalin konfigurasi bawaan Apache, mengubah direktorinya ke folder portofolio, dan mendefinisikan _ServerName_.
 - **Perintah CLI / Konfigurasi:**
 
 ```bash
-# Masuk ke direktori konfigurasi situs Apache
 ubuntu@ubuntu-server-1-24:~$ cd /etc/apache2/sites-available/
-ubuntu@ubuntu-server-1-24:/etc/apache2/sites-available$ sudo cp 000-default.conf www.milnandy.conf
+ubuntu@ubuntu-server-1-24:/etc/apache2/sites-available$ sudo cp -p 000-default.conf www.milnandy.conf
 ubuntu@ubuntu-server-1-24:/etc/apache2/sites-available$ sudo nano www.milnandy.conf
 ```
 
-Konfigurasi Virtual Host `/etc/apache2/sites-available/www.milnandy.conf`:
+Isi konfigurasi `/etc/apache2/sites-available/www.milnandy.conf`:
 
 ```apache
 <VirtualHost *:80>
-    ServerName www.milnandy.local
-    DocumentRoot /var/www/www.milnandy/startbootstrap-creative-master/dist/
-    ErrorLog ${APACHE_LOG_DIR}/www_error.log
-    CustomLog ${APACHE_LOG_DIR}/www_access.log combined
+        ServerName www.milnandy.local
+        DocumentRoot /var/www/www.milnandy/startbootstrap-creative-master/dist/
+
+        ErrorLog ${APACHE_LOG_DIR}/www.error.log
+        CustomLog ${APACHE_LOG_DIR}/www.access.log combined
 </VirtualHost>
 ```
 
-Aktifkan konfigurasi situs baru dan muat ulang Apache:
+Mengaktifkan situs dan memuat ulang Apache:
 
 ```bash
-ubuntu@ubuntu-server-1-24:~$ sudo a2dissite 000-default
-ubuntu@ubuntu-server-1-24:~$ sudo a2ensite www.milnandy.conf
-ubuntu@ubuntu-server-1-24:~$ sudo systemctl reload apache2
+ubuntu@ubuntu-server-1-24:/etc/apache2/sites-available$ sudo a2dissite 000-default.conf
+ubuntu@ubuntu-server-1-24:/etc/apache2/sites-available$ sudo a2ensite www.milnandy.conf
+ubuntu@ubuntu-server-1-24:/etc/apache2/sites-available$ sudo systemctl reload apache2
 ```
 
-### Langkah 3: Pembuatan Otoritas Sertifikat Lokal (Local Root CA)
+### Langkah 4: Penyesuaian Hosts Windows & Static Routing
 
-- **Penjelasan Singkat:** Membuat kunci privat dan sertifikat Root CA yang bertindak sebagai penerbit sertifikat tepercaya bagi domain internal kita.
+- **Penjelasan Singkat:** Mendaftarkan resolusi domain lokal ke file `hosts` Windows serta memastikan komputer host dapat menjangkau subnet _LAN Segment_ VM.
+- **Perintah / Konfigurasi (Windows Host):**
+
+1. Salin berkas `C:\Windows\System32\drivers\etc\hosts` ke Desktop.
+2. Buka menggunakan Notepad, tambahkan baris berikut di paling bawah:
+   ```text
+   172.16.2.2 milnandy.local
+   ```
+3. Simpan, lalu timpa (_replace_) kembali ke direktori asalnya di `C:\Windows\System32\drivers\etc\hosts`.
+
+Menambahkan rute statis agar Windows Host bisa mengakses subnet internal 172.16.2.0/24 (buka **CMD as Administrator**):
+
+```cmd
+:: Jika menggunakan NAT Gateway VMware (misal: 192.168.230.143)
+C:\Windows\system32> route add 172.16.2.0 mask 255.255.255.0 192.168.230.143 -p
+
+:: Atau jika menggunakan MikroTik CHR (misal: 192.168.230.128)
+C:\Windows\system32> route add 172.16.2.0 mask 255.255.255.0 192.168.230.128 -p
+```
+
+_Uji coba:_ Buka browser Microsoft Edge / Google Chrome, lalu akses `http://www.milnandy.local/`.
+
+---
+
+### Langkah 5: Pembuatan Infrastruktur PKI & SSL SAN (Enterprise Standard)
+
+- **Penjelasan Singkat:** Membangun _Root CA_ mandiri beserta pembuatan sertifikat web dengan ekstensi SAN (_Subject Alternative Name_) agar browser mempercayai multi-domain/wildcard [10].
 - **Perintah CLI / Konfigurasi:**
 
-```bash
-# Membuat folder penyimpanan sertifikat
-ubuntu@ubuntu-server-1-24:~$ sudo mkdir -p /etc/ssl/milnandy.local && cd /etc/ssl/milnandy.local
-
-# Membuat Private Key Root CA lokal (RSA 4096-bit)
-ubuntu@ubuntu-server-1-24:/etc/ssl/milnandy.local$ sudo openssl genrsa -out rootCA.key 4096
-
-# Membuat Sertifikat Root CA lokal self-signed (Berlaku 1 tahun)
-ubuntu@ubuntu-server-1-24:/etc/ssl/milnandy.local$ sudo openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 365 -out rootCA.crt -subj "/C=ID/ST=Jakarta/L=Jakarta/O=Milnandy Lab/OU=IT/CN=Milnandy Root CA"
-```
-
-### Langkah 4: Pembuatan Sertifikat SSL Multi-Domain (SAN)
-
-- **Penjelasan Singkat:** Menyusun konfigurasi DNS perluasan agar satu file sertifikat SSL valid untuk beberapa nama domain sekaligus (Subject Alternative Name) [10].
-- **Perintah CLI / Konfigurasi:**
+Membuat struktur direktori privat FHS:
 
 ```bash
-# Membuat file konfigurasi perluasan SAN
-ubuntu@ubuntu-server-1-24:/etc/ssl/milnandy.local$ sudo nano san.cnf
+ubuntu@ubuntu-server-1-24:~$ sudo mkdir -p /etc/ssl/private-ca/{private,certs,requests}
+ubuntu@ubuntu-server-1-24:~$ sudo chmod 700 /etc/ssl/private-ca/private
+ubuntu@ubuntu-server-1-24:~$ cd /etc/ssl/private-ca
 ```
 
-Isi dari berkas `san.cnf` [10]:
+**1. Membuat Konfigurasi Root CA (`root-ca.cnf`):**
 
-```ini
-[req]
-default_bits       = 2048
+```bash
+sudo tee root-ca.cnf << 'EOF'
+[ req ]
+default_bits       = 4096
 prompt             = no
 default_md         = sha256
-distinguished_name = req_distinguished_name
-req_extensions     = req_ext
+distinguished_name = dn
+x509_extensions    = v3_ca
 
-[req_distinguished_name]
+[ dn ]
 C  = ID
 ST = Jakarta
 L  = Jakarta
 O  = Milnandy Lab
-CN = milnandy.local
+OU = IT Infrastructure
+CN = Milnandy Root CA
 
-[req_ext]
-subjectAltName = @alt_names
-
-[alt_names]
-DNS.1 = milnandy.local
-DNS.2 = www.milnandy.local
-DNS.3 = blog.milnandy.local
-DNS.4 = games.milnandy.local
+[ v3_ca ]
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always,issuer
+basicConstraints = critical, CA:TRUE
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+EOF
 ```
 
-Tandatangani sertifikat domain menggunakan Root CA lokal [10]:
+**2. Generate Kunci & Sertifikat Root CA (Berlaku 365 Hari):**
 
 ```bash
-# 1. Membuat Key & CSR (Certificate Signing Request) untuk domain
-ubuntu@ubuntu-server-1-24:/etc/ssl/milnandy.local$ sudo openssl req -new -nodes -out milnandy.csr -newkey rsa:2048 -keyout milnandy.key -config san.cnf
-
-# 2. Melakukan penandatanganan CSR menggunakan kunci Root CA kita (Masa aktif 825 hari)
-ubuntu@ubuntu-server-1-24:/etc/ssl/milnandy.local$ sudo openssl x509 -req -in milnandy.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out milnandy.crt -days 825 -sha256 -extfile san.cnf -extensions req_ext
+ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo openssl genrsa -out private/root-ca.key 4096
+ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo chmod 600 private/root-ca.key
+ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo openssl req -x509 -new -nodes -key private/root-ca.key -sha256 -days 365 -out certs/root-ca.crt -config root-ca.cnf
 ```
 
-### Langkah 5: Implementasi SSL pada VirtualHost Apache2
+**3. Membuat Berkas Konfigurasi SSL Web Server (`web-server.cnf` dengan SAN):**
+_(Catatan: Browser modern mengabaikan CN, mereka wajib membaca SAN [Subject Alternative Name])._
 
-- **Penjelasan Singkat:** Mengaktifkan modul SSL Apache dan memetakan kunci serta sertifikat yang telah dibuat ke port HTTPS (443).
+```bash
+sudo tee web-server.cnf << 'EOF'
+[ req ]
+default_bits       = 2048
+prompt             = no
+default_md         = sha256
+distinguished_name = dn
+req_extensions     = req_ext
+
+[ dn ]
+C  = ID
+ST = Jakarta
+L  = Jakarta
+O  = Milnandy Lab
+OU = Web Services
+CN = milnandy.local
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = *.milnandy.local
+DNS.2 = milnandy.local
+IP.1  = 127.0.0.1
+EOF
+```
+
+**4. Generate Private Key & CSR Server, lalu Tanda Tangani via Root CA:**
+
+```bash
+ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo openssl genrsa -out private/web-server.key 2048
+ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo chmod 600 private/web-server.key
+
+ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo openssl req -new -key private/web-server.key -out requests/web-server.csr -config web-server.cnf
+
+# Tanda tangani menggunakan Root CA (masa aktif 1 hari / perbaruan latihan)
+ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo openssl x509 -req -in requests/web-server.csr -CA certs/root-ca.crt -CAkey private/root-ca.key -CAcreateserial -out certs/web-server.crt -days 1 -sha256 -extfile web-server.cnf -extensions req_ext
+```
+
+Mengatur izin keamanan file sertifikat:
+
+```bash
+ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo chmod 700 private
+ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo chmod 600 private/web-server.key
+ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo chmod 644 certs/web-server.crt certs/root-ca.crt
+```
+
+---
+
+### Langkah 6: Konfigurasi Virtual Host HTTPS (`blog.milnandy.local`)
+
+- **Penjelasan Singkat:** Mengunduh template web blog, mengonfigurasi Apache VirtualHost port 443 dengan sertifikat SSL buatan sendiri.
 - **Perintah CLI / Konfigurasi:**
 
 ```bash
-# Mengaktifkan modul SSL Apache
-ubuntu@ubuntu-server-1-24:~$ sudo a2enmod ssl
-
-# Membuka file konfigurasi VirtualHost SSL baru
-ubuntu@ubuntu-server-1-24:~$ sudo nano /etc/apache2/sites-available/blog-ssl.conf
+ubuntu@ubuntu-server-1-24:~$ sudo mkdir -p /var/www/blog.milnandy && cd /var/www/blog.milnandy
+ubuntu@ubuntu-server-1-24:/var/www/blog.milnandy$ sudo wget https://github.com/StartBootstrap/startbootstrap-resume/archive/refs/heads/master.zip
+ubuntu@ubuntu-server-1-24:/var/www/blog.milnandy$ sudo unzip master.zip
 ```
 
-Isi konfigurasi VirtualHost SSL:
+Membuat file konfigurasi VirtualHost HTTPS (`/etc/apache2/sites-available/blog.milnandy-ssl.conf`):
 
 ```apache
 <VirtualHost *:443>
     ServerName blog.milnandy.local
-    DocumentRoot /var/www/html
+    DocumentRoot /var/www/blog.milnandy/startbootstrap-resume-master
 
     SSLEngine on
-    SSLCertificateFile /etc/ssl/milnandy.local/milnandy.crt
-    SSLCertificateKeyFile /etc/ssl/milnandy.local/milnandy.key
+    SSLCertificateFile    /etc/ssl/private-ca/certs/web-server.crt
+    SSLCertificateKeyFile /etc/ssl/private-ca/private/web-server.key
 
-    ErrorLog ${APACHE_LOG_DIR}/blog_ssl_error.log
-    CustomLog ${APACHE_LOG_DIR}/blog_ssl_access.log combined
+    <Directory /var/www/blog.milnandy/startbootstrap-resume-master>
+        AllowOverride All
+        Require all granted
+    </Directory>
 </VirtualHost>
 ```
 
-Aktifkan konfigurasi dan muat ulang layanan:
+Mengaktifkan modul SSL dan situs:
 
 ```bash
-ubuntu@ubuntu-server-1-24:~$ sudo a2ensite blog-ssl.conf
+ubuntu@ubuntu-server-1-24:~$ sudo a2enmod ssl
+ubuntu@ubuntu-server-1-24:~$ sudo a2ensite blog.milnandy-ssl.conf
 ubuntu@ubuntu-server-1-24:~$ sudo systemctl restart apache2
 ```
 
 ---
 
-## 🔍 Verifikasi & Troubleshooting
+### Langkah 7: Instalasi Offline Nginx pada Server 2 (Slave)
 
-### Pengujian HTTPS & Sertifikat Domain
+- **Penjelasan Singkat:** Karena Server 2 diisolasi internetnya (_disconnected_), instalasi Nginx dilakukan dengan mengunduh file `.deb` di Server 1, mentransfernya via SCP, lalu menginstalnya secara lokal di Server 2.
+- **Perintah CLI / Konfigurasi:**
+
+Pada **Server 1**:
 
 ```bash
-# Memverifikasi port 443 telah aktif mendengarkan koneksi
-ubuntu@ubuntu-server-1-24:~$ ss -tulpn | grep apache2
+# Unduh paket Nginx beserta dependensinya ke direktori cache lokal
+ubuntu@ubuntu-server-1-24:~$ sudo apt update
+ubuntu@ubuntu-server-1-24:~$ sudo apt-get install --download-only --reinstall nginx -y
+
+# Kirim file paket .deb ke folder /var/cache/apt/archives/ di Server 2 via port SSH custom (2201)
+ubuntu@ubuntu-server-1-24:~$ sudo scp -P 2201 /var/cache/apt/archives/*nginx*.deb milnandy@172.16.2.3:/var/cache/apt/archives/
 ```
 
-![HTTPS Verification on Browser](../assets/04-apache-virtualhosts-verification.png)
+Pada **Server 2 (`ubuntu-server-2-24`)**:
 
-> _[Tugas Dokumentasi]: Pasang tangkapan layar akses HTTPS aman tanpa error keamanan (gembok hijau/aman) ke domain blog.milnandy.local setelah menginstal file rootCA.crt di Windows Trusted Root Certification Authorities._
+```bash
+# Masuk ke direktori cache lalu instal secara offline menggunakan dpkg
+ubuntu@ubuntu-server-2-24:~$ cd /var/cache/apt/archives/
+ubuntu@ubuntu-server-2-24:/var/cache/apt/archives$ sudo dpkg -i *nginx*.deb
+
+# Verifikasi status layanan Nginx
+ubuntu@ubuntu-server-2-24:/var/cache/apt/archives$ sudo systemctl status nginx.service
+```
+
+Menambahkan subdomain kustom (`web2.milnandy.local`) pada Nginx Server 2:
+
+```bash
+ubuntu@ubuntu-server-2-24:~$ sudo nano /etc/nginx/sites-available/default
+```
+
+Sesuaikan direktif `server_name`:
+
+```nginx
+server_name web2.milnandy.local;
+```
+
+Muat ulang Nginx: `sudo systemctl restart nginx`.
+
+---
+
+## 🔍 Verifikasi & Troubleshooting
+
+### Instalasi Root CA pada Windows Host (Agar Hijau/Trusted)
+
+1. Salin sertifikat _Root CA_ dari server ke home folder:
+   ```bash
+   ubuntu@ubuntu-server-1-24:~$ cp -p /etc/ssl/private-ca/certs/root-ca.crt /home/milnandy
+   ubuntu@ubuntu-server-1-24:~$ sudo chown milnandy:milnandy /home/milnandy/root-ca.crt
+   ```
+2. Tarik file `root-ca.crt` ke komputer host Windows menggunakan SCP:
+   ```cmd
+   C:\Windows\system32> scp -P 2201 -J abrar@192.168.230.128 milnandy@172.16.2.2:root-ca.crt D:\KumpulanFolder\Technology\
+   ```
+3. Klik dua kali pada file `root-ca.crt` di Windows -> **Install Certificate...** -> Pilih **Local Machine** -> Pilih **Place all certificates in the following store** -> Browse dan pilih **Trusted Root Certification Authorities** -> Next -> Finish.
+
+> ![Windows Certificate Store](../assets/phase-1-sandbox/04-windows-cert-store.png)
+> _[Instruksi]: Ambil tangkapan layar jendela Certificate Import Wizard saat memasang sertifikat ke Trusted Root Certification Authorities._
+
+### Mengatasi Pemindaian HTTPS Kaspersky (Opsional jika menggunakan Kaspersky)
+
+Jika Anda menggunakan antivirus Kaspersky dan browser menampilkan peringatan sertifikat meskipun Root CA sudah terpasang:
+
+1. Buka aplikasi Kaspersky di Windows.
+2. Masuk ke **Settings** -> **Security Settings** -> **Network Settings**.
+3. Di bagian **Encrypted connections scanning**, pilih **Do not scan encrypted connections** atau tambahkan pengecualian (_Manage Exclusions_) untuk domain `*.milnandy.local`.
+4. Simpan, lalu lakukan _hard refresh_ browser (`Ctrl + F5`).
+
+> ![Browser Secure Lock](../assets/phase-1-sandbox/04-secure-lock.png)
+> _[Instruksi]: Ambil tangkapan layar browser yang menampilkan ikon gembok aman (Secure Connection) saat membuka https://blog.milnandy.local._
 
 ### Log Masalah Terkenal & Solusi (Troubleshooting Log)
 
-1.  **Gagal Restart Apache (SSL Session Error):**
-    - _Gejala:_ Layanan Apache gagal menyala saat di-restart setelah konfigurasi SSL aktif.
-    - _Penyebab:_ Lupa mengaktifkan modul SSL di Apache (`a2enmod ssl`) atau jalur penulisan berkas sertifikat salah.
-    - _Solusi:_ Periksa kembali sintaks konfigurasi menggunakan perintah `sudo apache2ctl configtest`. Jika muncul peringatan terkait direktif SSL, aktifkan modul menggunakan `sudo a2enmod ssl` lalu periksa kembali penulisan file sertifikat Anda.
+1.  **Gagal Restart Apache (AH00557: apr_sockaddr_info_get failed):**
+    - _Gejala:_ Muncul pesan peringatan _Could not reliably determine the server's fully qualified domain name_ saat Apache dinyalakan.
+    - _Solusi:_ Hal ini bersifat informatif (_warning_) dan tidak menghentikan layanan. Namun, Anda bisa menghilangkannya secara permanen dengan mendefinisikan `ServerName localhost` atau `ServerName 127.0.0.1` di dalam berkas konfigurasi global `/etc/apache2/apache2.conf`.
