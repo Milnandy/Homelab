@@ -16,9 +16,9 @@
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 04 Topology](../assets/phase-1-sandbox/04-apache-virtualhosts-topology.png)
+![Modul 04 Topology](/assets/phase-1-sandbox/image/https-virtualhost-rootca-editable.drawio.png)
 
-> _[Placeholder Gambar]: Skema akses HTTPS dari browser Windows Client ke domain Virtual Host pada Server 1, yang divalidasi oleh Root CA internal yang terinstal pada Windows Trusted Root Store._
+> _Skema akses HTTPS dari browser Windows Client ke domain Virtual Host pada Server 1, yang divalidasi oleh Root CA internal yang terinstal pada Windows Trusted Root Store._
 
 ### Tabel Pengamatan IP / Interface & Layanan Web
 
@@ -328,8 +328,11 @@ Muat ulang Nginx: `sudo systemctl restart nginx`.
    ```
 3. Klik dua kali pada file `root-ca.crt` di Windows -> **Install Certificate...** -> Pilih **Local Machine** -> Pilih **Place all certificates in the following store** -> Browse dan pilih **Trusted Root Certification Authorities** -> Next -> Finish.
 
-> ![Windows Certificate Store](../assets/phase-1-sandbox/04-windows-cert-store.png)
-> _[Instruksi]: Ambil tangkapan layar jendela Certificate Import Wizard saat memasang sertifikat ke Trusted Root Certification Authorities._
+![Install Certificate](/assets/phase-1-sandbox/image/install-certificate.PNG)
+
+![Install Certificate](/assets/phase-1-sandbox/image/install-certificate1.PNG)
+
+> _Image Certificate Import Wizard saat memasang sertifikat ke Trusted Root Certification Authorities._
 
 ### Mengatasi Pemindaian HTTPS Kaspersky (Opsional jika menggunakan Kaspersky)
 
@@ -340,8 +343,15 @@ Jika Anda menggunakan antivirus Kaspersky dan browser menampilkan peringatan ser
 3. Di bagian **Encrypted connections scanning**, pilih **Do not scan encrypted connections** atau tambahkan pengecualian (_Manage Exclusions_) untuk domain `*.milnandy.local`.
 4. Simpan, lalu lakukan _hard refresh_ browser (`Ctrl + F5`).
 
-> ![Browser Secure Lock](../assets/phase-1-sandbox/04-secure-lock.png)
-> _[Instruksi]: Ambil tangkapan layar browser yang menampilkan ikon gembok aman (Secure Connection) saat membuka https://blog.milnandy.local._
+![Browser Secure Lock](/assets/phase-1-sandbox/image/kaspersky.PNG)
+
+![Browser Secure Lock](/assets/phase-1-sandbox/image/kaspersky1.PNG)
+
+![Browser Secure Lock](/assets/phase-1-sandbox/image/kaspersky2.PNG)
+
+![Browser Secure Lock](/assets/phase-1-sandbox/image/kaspersky3.PNG)
+
+> _Image browser yang menampilkan ikon gembok aman (Secure Connection) saat membuka https://blog.milnandy.local._
 
 ### Log Masalah Terkenal & Solusi (Troubleshooting Log)
 
