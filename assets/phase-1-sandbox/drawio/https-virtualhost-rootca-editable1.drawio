@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-10-22T10:00:00.000Z" agent="ChatGPT" version="24.7.17" type="device">
+  <diagram id="https-vhost-root-ca" name="HTTPS Virtual Host &amp; Internal Root CA">
+    <mxGraphModel dx="1422" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="HTTPS Virtual Host &amp; Validasi Internal Root CA" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;strokeColor=none;fillColor=none;fontColor=#14243A;fontSize=26;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="20" width="1100" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="Windows Client → Apache Virtual Hosts · sertifikat dipercaya melalui Windows Trusted Root Store" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;strokeColor=none;fillColor=none;fontColor=#526987;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="32" y="62" width="1200" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="windows" value="&lt;b&gt;Windows Host / Client&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;Browser (Chrome / Firefox / Edge)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF4FF;strokeColor=#2F80ED;strokeWidth=2;fontColor=#123B70;fontSize=16;align=center;verticalAlign=top;spacingTop=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="300" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="browser" value="&lt;b&gt;Browser&lt;/b&gt;&lt;br&gt;HTTPS request ke virtual host&lt;br&gt;&lt;br&gt;&lt;b&gt;Contoh:&lt;/b&gt;&lt;br&gt;www.milnandy.local&lt;br&gt;blog.milnandy.local" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5FAFF;strokeColor=#79AEEB;fontColor=#123B70;fontSize=13;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="65" y="205" width="250" height="105" as="geometry"/>
+        </mxCell>
+        <mxCell id="trust" value="&lt;b&gt;Windows Trusted Root Store&lt;/b&gt;&lt;br&gt;Root CA internal terpasang&lt;br&gt;&lt;br&gt;Validasi rantai sertifikat TLS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF6E5;strokeColor=#D99A19;strokeWidth=2;fontColor=#714A00;fontSize=15;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="65" y="330" width="250" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="server1" value="&lt;b&gt;ubuntu-server-1-24&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;Apache2 · Virtual Hosts&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF8F1;strokeColor=#159A68;strokeWidth=2;fontColor=#075B43;fontSize=16;align=center;verticalAlign=top;spacingTop=12;" vertex="1" parent="1">
+          <mxGeometry x="480" y="125" width="420" height="335" as="geometry"/>
+        </mxCell>
+        <mxCell id="vhostwww" value="&lt;b&gt;www.milnandy.local&lt;/b&gt;&lt;br&gt;HTTP :80&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;DocumentRoot: /var/www/www.milnandy/&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1FBF6;strokeColor=#69C39E;fontColor=#075B43;fontSize=13;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="505" y="195" width="370" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="vhostblog" value="&lt;b&gt;blog.milnandy.local&lt;/b&gt;&lt;br&gt;&lt;b&gt;HTTPS :443&lt;/b&gt; · SSL/TLS&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;DocumentRoot: /var/www/blog.milnandy/&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1FBF6;strokeColor=#69C39E;fontColor=#075B43;fontSize=13;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="505" y="267" width="370" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="vhostgames" value="&lt;b&gt;games.milnandy.local&lt;/b&gt;&lt;br&gt;HTTP :8001&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;DocumentRoot: /var/www/games.milnandy/&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1FBF6;strokeColor=#69C39E;fontColor=#075B43;fontSize=13;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="505" y="347" width="370" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="cert" value="&lt;b&gt;Sertifikat server&lt;/b&gt;&lt;br&gt;Ditandatangani oleh Root CA internal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF6E5;strokeColor=#D99A19;strokeWidth=2;fontColor=#714A00;fontSize=15;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="505" y="415" width="370" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="server2" value="&lt;b&gt;ubuntu-server-2-24&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;Nginx · Web Sekunder&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1ECFF;strokeColor=#7956D8;strokeWidth=2;fontColor=#43288D;fontSize=16;align=center;verticalAlign=top;spacingTop=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="155" width="390" height="235" as="geometry"/>
+        </mxCell>
+        <mxCell id="vhostweb2" value="&lt;b&gt;web2.milnandy.local&lt;/b&gt;&lt;br&gt;HTTP :80&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;DocumentRoot: /var/www/html/&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FAF8FF;strokeColor=#B5A2EF;fontColor=#43288D;fontSize=13;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="240" width="330" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="reqhttps" value="HTTPS request · TCP 443" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2676D2;strokeWidth=2;endArrow=block;endFill=1;fontColor=#164E8B;fontSize=13;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="windows" target="vhostblog">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="390" y="285"/>
+              <mxPoint x="450" y="285"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="certcheck" value="TLS certificate chain validation" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D99A19;strokeWidth=2;dashed=1;endArrow=block;endFill=1;fontColor=#714A00;fontSize=13;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cert" target="trust">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="460" y="430"/>
+              <mxPoint x="380" y="430"/>
+              <mxPoint x="380" y="372"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="httpwww" value="HTTP · TCP 80" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#159A68;strokeWidth=2;endArrow=block;endFill=1;fontColor=#075B43;fontSize=13;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="windows" target="vhostwww">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="390" y="220"/>
+              <mxPoint x="450" y="220"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="games" value="HTTP · TCP 8001" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#159A68;strokeWidth=2;endArrow=block;endFill=1;fontColor=#075B43;fontSize=13;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="windows" target="vhostgames">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="390"/>
+              <mxPoint x="455" y="390"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="web2" value="HTTP · TCP 80" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#7956D8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#43288D;fontSize=13;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="windows" target="vhostweb2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="940" y="180"/>
+              <mxPoint x="1000" y="180"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tabletitle" value="Tabel Pengamatan IP / Interface &amp; Layanan Web" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#244C78;strokeColor=#244C78;fontColor=#FFFFFF;fontSize=17;fontStyle=1;align=left;verticalAlign=middle;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="35" y="500" width="1400" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="th0" value="&lt;b&gt;Device Name&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244C78;strokeColor=#244C78;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="35" y="534" width="225" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="th1" value="&lt;b&gt;Layanan Web&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244C78;strokeColor=#244C78;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="260" y="534" width="195" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="th2" value="&lt;b&gt;Port&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244C78;strokeColor=#244C78;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="455" y="534" width="100" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="th3" value="&lt;b&gt;Document Root Direktori&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244C78;strokeColor=#244C78;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="555" y="534" width="300" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="th4" value="&lt;b&gt;Catatan&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244C78;strokeColor=#244C78;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="855" y="534" width="580" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="r0c0" value="ubuntu-server-1-24" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="35" y="566" width="225" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r0c1" value="Apache2 (HTTP)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="260" y="566" width="195" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r0c2" value="80" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="455" y="566" width="100" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r0c3" value="/var/www/www.milnandy/" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="555" y="566" width="300" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r0c4" value="Situs Portofolio Utama" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="855" y="566" width="580" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1c0" value="ubuntu-server-1-24" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="35" y="609" width="225" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1c1" value="Apache2 (HTTPS)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="260" y="609" width="195" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1c2" value="443" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="455" y="609" width="100" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1c3" value="/var/www/blog.milnandy/" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="555" y="609" width="300" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1c4" value="Blog / Admin Panel terenkripsi SSL" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="855" y="609" width="580" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r2c0" value="ubuntu-server-1-24" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="35" y="652" width="225" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r2c1" value="Apache2 (HTTP)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="260" y="652" width="195" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r2c2" value="8001" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="455" y="652" width="100" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r2c3" value="/var/www/games.milnandy/" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="555" y="652" width="300" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r2c4" value="Server Game Interaktif 2048" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="855" y="652" width="580" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r3c0" value="ubuntu-server-2-24" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="35" y="695" width="225" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r3c1" value="Nginx (HTTP)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="260" y="695" width="195" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r3c2" value="80" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="455" y="695" width="100" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r3c3" value="/var/www/html/" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="555" y="695" width="300" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="r3c4" value="Server Web Sekunder: web2.milnandy.local" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=12;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="855" y="695" width="580" height="43" as="geometry"/>
+        </mxCell>
+        <mxCell id="note" value="&lt;b&gt;Catatan keamanan&lt;/b&gt;&lt;br&gt;• Root CA internal harus diimpor ke Windows Trusted Root Certification Authorities.&lt;br&gt;• Nama domain yang diakses harus cocok dengan SAN/CN sertifikat server.&lt;br&gt;• HTTPS mengenkripsi koneksi pada port 443; HTTP port 80 dan 8001 tidak otomatis terenkripsi." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F8FC;strokeColor=#A9C3DE;fontColor=#17385B;fontSize=13;align=left;verticalAlign=middle;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="35" y="755" width="1390" height="90" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

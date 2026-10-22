@@ -2,13 +2,13 @@
 
 ## 📌 Ringkasan & Tujuan
 
-- **Tujuan Pembelajaran:** Mengonfigurasi web server Apache2 untuk melayani multi-domain (_Virtual Hosts_), membangun infrastruktur PKI (_Public Key Infrastructure_) tingkat enterprise menggunakan Otoritas Sertifikat lokal (_Local Root CA_), menerbitkan sertifikat SSL _wildcard/multi-domain_ berbasis _Subject Alternative Name_ (SAN), melakukan transfer paket _offline_ (Nginx) ke Server 2, serta mengonfigurasi _routing_ tingkat lanjut pada sistem host Windows.
-- **Skenario / Case Study:** Perusahaan ingin menjalankan aplikasi web berbeda secara internal: situs portofolio (`www.milnandy.local`) dan blog admin (`blog.milnandy.local`) menggunakan satu IP server tunggal di balik protokol HTTPS yang aman. Agar tidak memicu peringatan keamanan (_SSL Warning/Untrusted_) dari browser kerja client, administrator membangun _Root CA_ internal dan mendaftarkannya ke dalam _Windows Trusted Root Certificate Store_. Selain itu, Server 2 disiapkan secara _offline_ untuk menjalankan web server Nginx dengan subdomain terpisah (`web2.milnandy.local`).
+- **Tujuan Pembelajaran:** Mengonfigurasi web server Apache2 untuk melayani multi-domain (_Virtual Hosts_), membangun infrastruktur PKI (_Public Key Infrastructure_) tingkat enterprise menggunakan Otoritas Sertifikat lokal (_Local Root CA_), menerbitkan sertifikat SSL _wildcard/multi-domain_ berbasis _Subject Alternative Name_ (SAN) [10], melakukan transfer paket _offline_ (Nginx) ke Server 2, menyebarkan aplikasi web statis dan interaktif pada port kustom, serta melakukan penanganan insiden sertifikat kedaluwarsa (_Certificate Expired_).
+- **Skenario / Case Study:** Perusahaan ingin menjalankan beberapa aplikasi web secara internal: situs portofolio (`www.milnandy.local`), blog admin terenkripsi SSL (`blog.milnandy.local`), dan game interaktif pada port khusus (`games.milnandy.local:8001`) menggunakan infrastruktur server lokal. Agar tidak memicu peringatan keamanan (_SSL Warning/Untrusted_) dari browser kerja client, administrator membangun _Root CA_ internal dan mendaftarkannya ke dalam _Windows Trusted Root Certificate Store_. Selain itu, Server 2 disiapkan secara _offline_ untuk menjalankan web server Nginx dengan subdomain terpisah (`web2.milnandy.local`).
 - **Keterangan Templating / Sumber Proyek:**
   Proyek web statis dalam modul ini dimodifikasi dari templat _open-source_ profesional:
   - [Start Bootstrap Creative](https://github.com/StartBootstrap/startbootstrap-creative) (Digunakan untuk portofolio utama `www.milnandy.local`)
   - [Start Bootstrap Resume](https://github.com/StartBootstrap/startbootstrap-resume) (Digunakan untuk situs blog/resume `blog.milnandy.local`)
-  - [2048](https://github.com/gabrielecirulli/2048) (Digunakan untuk situs games `games.milnandy.local`)
+  - [Gabriele Cirulli 2048](https://github.com/gabrielecirulli/2048) (Digunakan untuk server game interaktif pada `games.milnandy.local` port `8001`)
 - **Kebutuhan Perangkat / Prasyarat:**
   - Server Apache2 (`apache2`) & Nginx (`nginx`)
   - OpenSSL Utility
@@ -17,17 +17,18 @@
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 04 Topology](/assets/phase-1-sandbox/image/https-virtualhost-rootca-editable.drawio.png)
+![Modul 04 Topology](/assets/phase-1-sandbox/image/https-virtualhost-rootca-editable1.drawio.png)
 
 > _Skema akses HTTPS dari browser Windows Client ke domain Virtual Host pada Server 1, yang divalidasi oleh Root CA internal yang terinstal pada Windows Trusted Root Store._
 
 ### Tabel Pengamatan IP / Interface & Layanan Web
 
-| Device Name        | Layanan Web     | Port | Dokumen Root Direktori    | Catatan                                     |
-| ------------------ | --------------- | ---- | ------------------------- | ------------------------------------------- |
-| ubuntu-server-1-24 | Apache2 (HTTP)  | 80   | `/var/www/www.milnandy/`  | Situs Portofolio Utama                      |
-| ubuntu-server-1-24 | Apache2 (HTTPS) | 443  | `/var/www/blog.milnandy/` | Blog/Admin Panel terenkripsi SSL            |
-| ubuntu-server-2-24 | Nginx (HTTP)    | 80   | `/var/www/html/`          | Server Web Sekunder (`web2.milnandy.local`) |
+| Device Name        | Layanan Web     | Port | Dokumen Root Direktori     | Catatan                                     |
+| ------------------ | --------------- | ---- | -------------------------- | ------------------------------------------- |
+| ubuntu-server-1-24 | Apache2 (HTTP)  | 80   | `/var/www/www.milnandy/`   | Situs Portofolio Utama                      |
+| ubuntu-server-1-24 | Apache2 (HTTPS) | 443  | `/var/www/blog.milnandy/`  | Blog/Admin Panel terenkripsi SSL            |
+| ubuntu-server-1-24 | Apache2 (HTTP)  | 8001 | `/var/www/games.milnandy/` | Server Game Interaktif 2048                 |
+| ubuntu-server-2-24 | Nginx (HTTP)    | 80   | `/var/www/html/`           | Server Web Sekunder (`web2.milnandy.local`) |
 
 ---
 
@@ -270,51 +271,7 @@ ubuntu@ubuntu-server-1-24:~$ sudo systemctl restart apache2
 
 ---
 
-### Langkah 7: Instalasi Offline Nginx pada Server 2 (Slave)
-
-- **Penjelasan Singkat:** Karena Server 2 diisolasi internetnya (_disconnected_), instalasi Nginx dilakukan dengan mengunduh file `.deb` di Server 1, mentransfernya ke folder `/tmp` via SCP menggunakan user non-root `milnandy`, lalu memindahkannya menggunakan `sudo mv` ke `/var/cache/apt/archives/` sebelum diinstal secara lokal di Server 2 menggunakan `dpkg`.
-- **Perintah CLI / Konfigurasi:**
-
-Pada **Server 1**:
-
-```bash
-# Unduh paket Nginx beserta dependensinya ke direktori cache lokal
-ubuntu@ubuntu-server-1-24:~$ sudo apt update
-ubuntu@ubuntu-server-1-24:~$ sudo apt-get install --download-only --reinstall nginx -y
-
-# Kirim file paket .deb ke folder /tmp di Server 2 via port SSH custom (2201) menggunakan user milnandy
-ubuntu@ubuntu-server-1-24:~$ sudo scp -P 2201 /var/cache/apt/archives/*nginx*.deb milnandy@172.16.2.3:/tmp/
-```
-
-Pada **Server 2 (`ubuntu-server-2-24`)**:
-
-```bash
-# Pindahkan paket dari /tmp ke direktori cache apt sistem, lalu instal secara offline menggunakan dpkg
-ubuntu@ubuntu-server-2-24:~$ cd /var/cache/apt/archives/
-ubuntu@ubuntu-server-2-24:/var/cache/apt/archives$ sudo mv /tmp/*nginx*.deb .
-ubuntu@ubuntu-server-2-24:/var/cache/apt/archives$ sudo dpkg -i *nginx*.deb
-
-# Verifikasi status layanan Nginx
-ubuntu@ubuntu-server-2-24:/var/cache/apt/archives$ sudo systemctl status nginx.service
-```
-
-Menambahkan subdomain kustom (`web2.milnandy.local`) pada Nginx Server 2:
-
-```bash
-ubuntu@ubuntu-server-2-24:~$ sudo nano /etc/nginx/sites-available/default
-```
-
-Sesuaikan direktif `server_name`:
-
-```nginx
-server_name web2.milnandy.local;
-```
-
-Muat ulang Nginx: `sudo systemctl restart nginx`.
-
----
-
-### Langkah 8: Deploy Web Game 2048 pada Port Kustom (8001)
+### Langkah 7: Deploy Web Game 2048 pada Port Kustom (8001)
 
 - **Penjelasan Singkat:** Menambahkan situs web ketiga berupa game interaktif 2048 (bersumber dari [GitHub Gabriele Cirulli 2048](https://github.com/gabrielecirulli/2048)) yang berjalan di atas port alternatif `8001` menggunakan Apache.
 - **Perintah CLI / Konfigurasi:**
@@ -362,6 +319,50 @@ ubuntu@ubuntu-server-1-24:/etc/apache2/sites-available$ sudo systemctl reload ap
 ```
 
 _Uji Coba:_ Akses melalui browser client ke alamat `http://172.16.2.2:8001` atau `http://milnandy.local:8001`.
+
+---
+
+### Langkah 8: Instalasi Offline Nginx pada Server 2 (Slave)
+
+- **Penjelasan Singkat:** Karena Server 2 diisolasi internetnya (_disconnected_), instalasi Nginx dilakukan dengan mengunduh file `.deb` di Server 1, mentransfernya ke folder `/tmp` via SCP menggunakan user non-root `milnandy`, lalu memindahkannya menggunakan `sudo mv` ke `/var/cache/apt/archives/` sebelum diinstal secara lokal di Server 2 menggunakan `dpkg`.
+- **Perintah CLI / Konfigurasi:**
+
+Pada **Server 1**:
+
+```bash
+# Unduh paket Nginx beserta dependensinya ke direktori cache lokal
+ubuntu@ubuntu-server-1-24:~$ sudo apt update
+ubuntu@ubuntu-server-1-24:~$ sudo apt-get install --download-only --reinstall nginx -y
+
+# Kirim file paket .deb ke folder /tmp di Server 2 via port SSH custom (2201) menggunakan user milnandy
+ubuntu@ubuntu-server-1-24:~$ sudo scp -P 2201 /var/cache/apt/archives/*nginx*.deb milnandy@172.16.2.3:/tmp/
+```
+
+Pada **Server 2 (`ubuntu-server-2-24`)**:
+
+```bash
+# Pindahkan paket dari /tmp ke direktori cache apt sistem, lalu instal secara offline menggunakan dpkg
+ubuntu@ubuntu-server-2-24:~$ cd /var/cache/apt/archives/
+ubuntu@ubuntu-server-2-24:/var/cache/apt/archives$ sudo mv /tmp/*nginx*.deb .
+ubuntu@ubuntu-server-2-24:/var/cache/apt/archives$ sudo dpkg -i *nginx*.deb
+
+# Verifikasi status layanan Nginx
+ubuntu@ubuntu-server-2-24:/var/cache/apt/archives$ sudo systemctl status nginx.service
+```
+
+Menambahkan subdomain kustom (`web2.milnandy.local`) pada Nginx Server 2:
+
+```bash
+ubuntu@ubuntu-server-2-24:~$ sudo nano /etc/nginx/sites-available/default
+```
+
+Sesuaikan direktif `server_name`:
+
+```nginx
+server_name web2.milnandy.local;
+```
+
+Muat ulang Nginx: `sudo systemctl restart nginx`.
 
 ---
 
