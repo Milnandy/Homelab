@@ -8,6 +8,7 @@
   Proyek web statis dalam modul ini dimodifikasi dari templat _open-source_ profesional:
   - [Start Bootstrap Creative](https://github.com/StartBootstrap/startbootstrap-creative) (Digunakan untuk portofolio utama `www.milnandy.local`)
   - [Start Bootstrap Resume](https://github.com/StartBootstrap/startbootstrap-resume) (Digunakan untuk situs blog/resume `blog.milnandy.local`)
+  - [2048](https://github.com/gabrielecirulli/2048) (Digunakan untuk situs games `games.milnandy.local`)
 - **Kebutuhan Perangkat / Prasyarat:**
   - Server Apache2 (`apache2`) & Nginx (`nginx`)
   - OpenSSL Utility
@@ -313,6 +314,57 @@ Muat ulang Nginx: `sudo systemctl restart nginx`.
 
 ---
 
+### Langkah 8: Deploy Web Game 2048 pada Port Kustom (8001)
+
+- **Penjelasan Singkat:** Menambahkan situs web ketiga berupa game interaktif 2048 (bersumber dari [GitHub Gabriele Cirulli 2048](https://github.com/gabrielecirulli/2048)) yang berjalan di atas port alternatif `8001` menggunakan Apache.
+- **Perintah CLI / Konfigurasi:**
+
+```bash
+# 1. Membuat direktori root web untuk game dan mengunduh repositori github
+ubuntu@ubuntu-server-1-24:~$ sudo mkdir -p /var/www/games.milnandy && cd /var/www/games.milnandy
+ubuntu@ubuntu-server-1-24:/var/www/games.milnandy$ sudo wget https://github.com/gabrielecirulli/2048/archive/refs/heads/master.zip
+ubuntu@ubuntu-server-1-24:/var/www/games.milnandy$ sudo unzip master.zip
+
+# 2. Menambahkan instruksi agar Apache mendengarkan port 8001
+ubuntu@ubuntu-server-1-24:~$ sudo nano /etc/apache2/ports.conf
+```
+
+Tambahkan baris berikut di bagian direktif _Listen_:
+
+```apache
+Listen 8001
+```
+
+```bash
+# 3. Membuat file konfigurasi VirtualHost untuk port 8001
+ubuntu@ubuntu-server-1-24:~$ cd /etc/apache2/sites-available
+ubuntu@ubuntu-server-1-24:/etc/apache2/sites-available$ sudo cp -p 000-default.conf games.milnandy.conf
+ubuntu@ubuntu-server-1-24:/etc/apache2/sites-available$ sudo nano games.milnandy.conf
+```
+
+Isi konfigurasi `/etc/apache2/sites-available/games.milnandy.conf`:
+
+```apache
+<VirtualHost *:8001>
+        ServerName games.milnandy.local
+        DocumentRoot /var/www/games.milnandy/2048-master
+
+        ErrorLog ${APACHE_LOG_DIR}/games.error.log
+        CustomLog ${APACHE_LOG_DIR}/games.access.log combined
+</VirtualHost>
+```
+
+Mengaktifkan situs dan memuat ulang Apache:
+
+```bash
+ubuntu@ubuntu-server-1-24:/etc/apache2/sites-available$ sudo a2ensite games.milnandy.conf
+ubuntu@ubuntu-server-1-24:/etc/apache2/sites-available$ sudo systemctl reload apache2
+```
+
+_Uji Coba:_ Akses melalui browser client ke alamat `http://172.16.2.2:8001` atau `http://milnandy.local:8001`.
+
+---
+
 ## 🔍 Verifikasi & Troubleshooting
 
 ### Instalasi Root CA pada Windows Host (Agar Hijau/Trusted)
@@ -358,3 +410,31 @@ Jika Anda menggunakan antivirus Kaspersky dan browser menampilkan peringatan ser
 1.  **Gagal Restart Apache (AH00557: apr_sockaddr_info_get failed):**
     - _Gejala:_ Muncul pesan peringatan _Could not reliably determine the server's fully qualified domain name_ saat Apache dinyalakan.
     - _Solusi:_ Hal ini bersifat informatif (_warning_) dan tidak menghentikan layanan. Namun, Anda bisa membuangnya secara permanen dengan mendefinisikan `ServerName localhost` atau `ServerName 127.0.0.1` di dalam berkas konfigurasi global `/etc/apache2/apache2.conf`.
+
+### Kasus Simulasi: Sertifikat SSL Kedaluwarsa (_Certificate Expired_)
+
+Pada **Langkah 5**, kita sengaja membuat sertifikat web server dengan masa aktif hanya **1 hari** (`-days 1`) untuk keperluan pembelajaran penanganan insiden (_Incident Response_). Ketika masa berlaku tersebut habis, browser client akan menolak koneksi secara otomatis dan memunculkan peringatan keamanan kritis (_NET::ERR_CERT_DATE_INVALID_).
+
+![Expired Certificate Warning](/assets/phase-1-sandbox/image/certificate-expired.PNG)
+
+![Expired Certificate Warning](/assets/phase-1-sandbox/image/certificate-expired1.PNG)
+
+![Expired Certificate Warning](/assets/phase-1-sandbox/image/certificate-expired2.PNG)
+*Image baris perintah terminal saat pengecekan masa aktif menggunakan perintah `openssl x509 -enddate -noout -in certs/web-server.crt` yang mengonfirmasi bahwa sertifikat telah melewati batas waktu (*expired*).*
+
+**Cara Memperbarui (_Renew_) Sertifikat yang Kedaluwarsa:**
+Masuk kembali ke direktori privat PKI di Server 1, lalu jalankan ulang perintah penandatanganan CSR menggunakan Root CA yang sama:
+
+```bash
+# Pindah ke directory yang ada
+ubuntu@ubuntu-server-1-24:~$ cd /etc/ssl/private-ca
+
+# Menandatangani ulang CSR dengan memperpanjang masa aktif (misal: -days 365)
+ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo openssl x509 -req -in requests/web-server.csr \
+  -CA certs/root-ca.crt -CAkey private/root-ca.key -CAcreateserial \
+  -out certs/web-server.crt -days 365 -sha256 \
+  -extfile web-server.cnf -extensions req_ext
+
+# Muat ulang layanan web server Apache
+ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo systemctl restart apache2
+```
