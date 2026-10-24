@@ -2,7 +2,7 @@
 
 ## 📌 Ringkasan & Tujuan
 
-- **Tujuan Pembelajaran:** Mengonfigurasi web server Apache2 untuk melayani multi-domain (_Virtual Hosts_), membangun infrastruktur PKI (_Public Key Infrastructure_) tingkat enterprise menggunakan Otoritas Sertifikat lokal (_Local Root CA_), menerbitkan sertifikat SSL _wildcard/multi-domain_ berbasis _Subject Alternative Name_ (SAN) [10], melakukan transfer paket _offline_ (Nginx) ke Server 2, menyebarkan aplikasi web statis dan interaktif pada port kustom, serta melakukan penanganan insiden sertifikat kedaluwarsa (_Certificate Expired_).
+- **Tujuan Pembelajaran:** Mengonfigurasi web server Apache2 untuk melayani multi-domain (_Virtual Hosts_), membangun infrastruktur PKI (_Public Key Infrastructure_) tingkat enterprise menggunakan Otoritas Sertifikat lokal (_Local Root CA_), menerbitkan sertifikat SSL _wildcard/multi-domain_ berbasis _Subject Alternative Name_ (SAN), melakukan transfer paket _offline_ (Nginx) ke Server 2, menyebarkan aplikasi web statis dan interaktif pada port kustom, serta melakukan penanganan insiden sertifikat kedaluwarsa (_Certificate Expired_).
 - **Skenario / Case Study:** Perusahaan ingin menjalankan beberapa aplikasi web secara internal: situs portofolio (`www.milnandy.local`), blog admin terenkripsi SSL (`blog.milnandy.local`), dan game interaktif pada port khusus (`games.milnandy.local:8001`) menggunakan infrastruktur server lokal. Agar tidak memicu peringatan keamanan (_SSL Warning/Untrusted_) dari browser kerja client, administrator membangun _Root CA_ internal dan mendaftarkannya ke dalam _Windows Trusted Root Certificate Store_. Selain itu, Server 2 disiapkan secara _offline_ untuk menjalankan web server Nginx dengan subdomain terpisah (`web2.milnandy.local`).
 - **Keterangan Templating / Sumber Proyek:**
   Proyek web statis dalam modul ini dimodifikasi dari templat _open-source_ profesional:
@@ -438,4 +438,47 @@ ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo openssl x509 -req -in reques
 
 # Muat ulang layanan web server Apache
 ubuntu@ubuntu-server-1-24:/etc/ssl/private-ca$ sudo systemctl restart apache2
+```
+
+**Cara Memperbarui Otomatis (_Renew_) Sertifikat yang Kedaluwarsa:**
+
+Buat file skripnya menggunakan heredoc yang rapi:
+
+```bash
+cat << 'EOF' > /etc/ssl/private-ca/renew-certificate.sh
+#!/bin/bash
+
+# Pindah ke direktori kerja CA
+cd /etc/ssl/private-ca || exit 1
+
+echo "[*] Memulai pembaruan sertifikat web-server (-days 1)..."
+
+# Jalankan perintah penandatanganan OpenSSL
+openssl x509 -req -in requests/web-server.csr \
+  -CA certs/root-ca.crt -CAkey private/root-ca.key -CAcreateserial \
+  -out certs/web-server.crt -days 1 -sha256 \
+  -extfile web-server.cnf -extensions req_ext
+
+if [ $? -eq 0 ]; then
+    echo "[+] Sertifikat berhasil diperbarui!"
+    # Restart Apache untuk memuat sertifikat baru
+    systemctl restart apache2
+    echo "[+] Apache2 berhasil direstart."
+else
+    echo "[-] Gagal memperbarui sertifikat!"
+    exit 1
+fi
+EOF
+```
+
+Berikan izin eksekusi (chmod +x):
+
+```bash
+chmod +x /etc/ssl/private-ca/renew-certificate.sh
+```
+
+Cara Menjalankannya (Cukup 1 Baris Perintah Kapan Pun Kamu Mau):
+
+```bash
+sudo /etc/ssl/private-ca/renew-certificate.sh
 ```
