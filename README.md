@@ -15,11 +15,12 @@ _Fokus:_ Menguasai administrasi sistem Linux, manajemen paket, penyimpanan dinam
 - **[Modul 1.2: SFTP Jail, Cron Job, & Cockpit Dashboard](./docs/phase-1-virtual-sandbox/02-sftp-cron-cockpit.md)**
 - **[Modul 1.3: Redundansi DNS Server BIND9 Master-Slave](./docs/phase-1-virtual-sandbox/03-dns-master-slave.md)**
 - **[Modul 1.4: Web Server Apache2, Virtual Hosts, & SSL SAN](./docs/phase-1-virtual-sandbox/04-apache2-web-server-virtual-hosts-&-ssl-san.md)**
-- **Modul 1.5: High Availability & Load Balancing (HAProxy vs Nginx)**
-- **Modul 1.6: File Sharing Enterprise dengan Samba (Security & ACL)**
-- **Modul 1.7: Proxy Service (Squid Forward & Reverse Proxy)**
-- **Modul 1.8: Manajemen Penyimpanan Dinamis dengan LVM**
-- **Modul 1.9: Mail Server Komprehensif (Postfix, Dovecot, & Roundcube)**
+- **[Modul 1.5: Database Server (MariaDB Master-Slave & phpMyAdmin)](./docs/phase-1-virtual-sandbox/05-database-server-master-slave-phpmyadmin.md)**
+- **Modul 1.6: High Availability & Load Balancing (HAProxy vs Nginx)**
+- **Modul 1.7: File Sharing Enterprise dengan Samba (Security & ACL)**
+- **Modul 1.8: Proxy Service (Squid Forward & Reverse Proxy)**
+- **Modul 1.9: Manajemen Penyimpanan Dinamis dengan LVM**
+- **Modul 1.10: Mail Server Komprehensif (Postfix, Dovecot, & Roundcube)**
 
 ---
 
