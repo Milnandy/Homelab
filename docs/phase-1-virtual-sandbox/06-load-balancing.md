@@ -1,4 +1,4 @@
-# Modul 05: High Availability & Load Balancing (HAProxy vs Nginx)
+# Modul 06: High Availability & Load Balancing (HAProxy vs Nginx)
 
 ## 📌 Ringkasan & Tujuan
 

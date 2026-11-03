@@ -1,4 +1,4 @@
-# Modul 07: Proxy Service (Squid Forward & Reverse Proxy)
+# Modul 10: Proxy Service (Squid Forward & Reverse Proxy)
 
 ## 📌 Ringkasan & Tujuan
 

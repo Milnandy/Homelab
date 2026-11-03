@@ -1,4 +1,4 @@
-# Modul 06: File Sharing Enterprise dengan Samba (Security & ACL)
+# Modul 07: File Sharing Enterprise dengan Samba (Security & ACL)
 
 ## 📌 Ringkasan & Tujuan
 
