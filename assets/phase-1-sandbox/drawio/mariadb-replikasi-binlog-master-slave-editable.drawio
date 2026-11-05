@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-11-03T08:55:00.000Z" agent="ChatGPT" version="24.7.17" type="device">
+  <diagram id="mariadb-binlog" name="MariaDB Binlog Replication">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="t" value="Skema Replikasi Database MariaDB" style="text;html=1;align=center;verticalAlign=middle;fontSize=24;fontStyle=1;fontColor=#14213D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1080" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="st" value="Replikasi Binary Log satu arah: Master → Slave melalui TCP port 3306" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontColor=#526581;" vertex="1" parent="1">
+          <mxGeometry x="40" y="62" width="1080" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="master" value="&lt;b&gt;DATABASE MASTER&lt;/b&gt;&lt;br&gt;&lt;br&gt;ubuntu-server-1-24&lt;br&gt;&lt;font style='font-size:14px'&gt;172.16.2.2&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5EE;strokeColor=#169B62;strokeWidth=2;fontColor=#164B36;fontSize=17;fontStyle=1;align=center;verticalAlign=middle;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="90" y="145" width="350" height="175" as="geometry"/>
+        </mxCell>
+        <mxCell id="slave" value="&lt;b&gt;DATABASE SLAVE&lt;/b&gt;&lt;br&gt;&lt;br&gt;ubuntu-server-2-24&lt;br&gt;&lt;font style='font-size:14px'&gt;172.16.2.3&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0ECFF;strokeColor=#7656D6;strokeWidth=2;fontColor=#382477;fontSize=17;fontStyle=1;align=center;verticalAlign=middle;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="730" y="145" width="350" height="175" as="geometry"/>
+        </mxCell>
+        <mxCell id="md" value="&lt;b&gt;MariaDB Server&lt;/b&gt;&lt;br&gt;Port: &lt;b&gt;3306/TCP&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Peran:&lt;/b&gt;&lt;br&gt;• Menangani operasi WRITE&lt;br&gt;• Mencatat perubahan ke Binary Log (binlog)&lt;br&gt;• Mengirim event replikasi ke Slave" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9BCDB3;fontColor=#244B39;fontSize=13;align=left;verticalAlign=middle;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="110" y="340" width="310" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="sd" value="&lt;b&gt;MariaDB Server&lt;/b&gt;&lt;br&gt;Port: &lt;b&gt;3306/TCP&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Peran:&lt;/b&gt;&lt;br&gt;• Menerima event binlog dari Master&lt;br&gt;• SQL thread menerapkan perubahan&lt;br&gt;• Menjaga salinan data tetap tersinkron" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B9A9EF;fontColor=#382477;fontSize=13;align=left;verticalAlign=middle;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="750" y="340" width="310" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="rep" value="Replikasi Binary Log (Binlog)&lt;br&gt;&lt;b&gt;TCP 3306 • Satu arah&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#D97706;strokeWidth=3;endArrow=block;endFill=1;fontSize=14;fontStyle=1;fontColor=#9A4D00;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="master" target="slave">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="flow" value="&lt;b&gt;ALUR REPLIKASI&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. Master menerima perubahan data (WRITE).&lt;br&gt;2. Perubahan dicatat ke binary log.&lt;br&gt;3. Slave mengambil event binlog melalui koneksi replikasi.&lt;br&gt;4. Slave menerapkan perubahan pada database lokal." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E8;strokeColor=#E7B65C;fontColor=#704B13;fontSize=12;align=left;verticalAlign=middle;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="465" y="175" width="240" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="tt" value="Tabel Pengamatan Layanan Database" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#244B75;strokeColor=#244B75;fontColor=#FFFFFF;fontStyle=1;fontSize=16;align=left;verticalAlign=middle;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="545" width="1080" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="h0" value="Peran Server" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244B75;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="579" width="200" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="h1" value="Hostname" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244B75;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="240" y="579" width="245" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="h2" value="IP Address" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244B75;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="485" y="579" width="170" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="h3" value="Port" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244B75;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="655" y="579" width="135" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="h4" value="Keterangan" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244B75;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="790" y="579" width="330" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="r0c0" value="Database Master" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=12;align=left;verticalAlign=middle;spacing=7;" vertex="1" parent="1">
+          <mxGeometry x="40" y="617" width="200" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="r0c1" value="ubuntu-server-1-24" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=12;align=left;verticalAlign=middle;spacing=7;" vertex="1" parent="1">
+          <mxGeometry x="240" y="617" width="245" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="r0c2" value="172.16.2.2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=12;align=left;verticalAlign=middle;spacing=7;" vertex="1" parent="1">
+          <mxGeometry x="485" y="617" width="170" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="r0c3" value="3306" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=12;align=left;verticalAlign=middle;spacing=7;" vertex="1" parent="1">
+          <mxGeometry x="655" y="617" width="135" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="r0c4" value="Menangani operasi Write &amp; Replikasi Binlog" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=12;align=left;verticalAlign=middle;spacing=7;" vertex="1" parent="1">
+          <mxGeometry x="790" y="617" width="330" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1c0" value="Database Slave" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=12;align=left;verticalAlign=middle;spacing=7;" vertex="1" parent="1">
+          <mxGeometry x="40" y="665" width="200" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1c1" value="ubuntu-server-2-24" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=12;align=left;verticalAlign=middle;spacing=7;" vertex="1" parent="1">
+          <mxGeometry x="240" y="665" width="245" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1c2" value="172.16.2.3" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=12;align=left;verticalAlign=middle;spacing=7;" vertex="1" parent="1">
+          <mxGeometry x="485" y="665" width="170" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1c3" value="3306" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=12;align=left;verticalAlign=middle;spacing=7;" vertex="1" parent="1">
+          <mxGeometry x="655" y="665" width="135" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1c4" value="Menerima replikasi data otomatis dari Master" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=12;align=left;verticalAlign=middle;spacing=7;" vertex="1" parent="1">
+          <mxGeometry x="790" y="665" width="330" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="note2" value="&lt;b&gt;Catatan&lt;/b&gt;&lt;br&gt;• Replikasi yang digambarkan bersifat satu arah: Master → Slave.&lt;br&gt;• Port 3306/TCP harus dapat dijangkau dari Slave ke layanan MariaDB Master.&lt;br&gt;• Diagram menunjukkan rancangan alur; status replikasi aktual perlu diverifikasi pada kedua server." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E8;strokeColor=#E7B65C;fontColor=#704B13;fontSize=12;align=left;verticalAlign=middle;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="730" width="1080" height="80" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

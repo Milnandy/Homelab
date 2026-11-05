@@ -10,9 +10,9 @@
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 05 Topology](../assets/phase-1-sandbox/05-database-server-topology.png)
+![Modul 05 Topology](/assets/phase-1-sandbox/image/mariadb-replikasi-binlog-master-slave-editable.drawio.png)
 
-> _[Placeholder Gambar]: Skema replikasi biner log satu arah dari MariaDB Master (172.16.2.2) menuju MariaDB Slave (172.16.2.3)._
+> _Skema replikasi biner log satu arah dari MariaDB Master (172.16.2.2) menuju MariaDB Slave (172.16.2.3)._
 
 ### Tabel Pengamatan Layanan Database
 
@@ -103,6 +103,12 @@ ubuntu@ubuntu-server-1-24:~$ sudo systemctl restart apache2
 ```
 
 _Uji Coba:_ Akses melalui browser host ke alamat `http://172.16.2.2/phpmyadmin` dan login menggunakan user `sa`.
+
+![Phpmyadmin Test](/assets/phase-1-sandbox/image/phpmyadmin.PNG)
+
+![Phpmyadmin Test](/assets/phase-1-sandbox/image/phpmyadmin1.PNG)
+
+> _Tampilan akses phpmyadmin melalui web browser._
 
 ---
 
@@ -199,7 +205,8 @@ _Uji Coba:_ Akses melalui browser host ke alamat `http://172.16.2.2/phpmyadmin` 
 
 ```bash
 # Periksa status replikasi secara mendalam di Server 2 (Slave)
-ubuntu@ubuntu-server-2-24:~$ sudo mysql -u root -p -e "SHOW SLAVE STATUS\G"
+ubuntu@ubuntu-server-2-24:~$ sudo mysql -u root -p
+SHOW SLAVE STATUS\G
 ```
 
 _Pastikan parameter berikut bernilai **Yes**:_
