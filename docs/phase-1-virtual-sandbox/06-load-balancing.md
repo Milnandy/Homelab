@@ -256,30 +256,74 @@ ubuntu@ubuntu-server-1-24:~$ sudo systemctl reload nginx
 
 ---
 
+Berikut adalah penyempurnaan pada bagian **Verifikasi & Troubleshooting** di **Modul 06**. Saya telah menambahkan panduan pengujian visual dan langkah verifikasi spesifik untuk memastikan bahwa setiap subdomain (_www_, _games_, _blog_), halaman utilitas (`/phpmyadmin`, `/lbstats`), serta pembuktian algoritma **Round-Robin** dan **Least Connections** pada HAProxy maupun Nginx berjalan dengan sempurna tanpa perlu mencantumkan port eksplisit di URL browser.
+
+Anda dapat mengganti seluruh bagian **🔍 Verifikasi & Troubleshooting** pada berkas `docs/phase-1-sandbox/06-load-balancing.md` dengan teks di bawah ini:
+
+---
+
 ## 🔍 Verifikasi & Troubleshooting
 
-### Pengujian Beban Konkuren Menggunakan ApacheBench (`ab`)
+### 1. Verifikasi Akses Subdomain Tanpa Port & Path Spesifik
 
-Untuk menguji performa klaster load balancing dan membuktikan pembagian beban (_load distribution_), kita menggunakan utilitas `apache2-utils`:
+Pastikan rute DNS lokal (`hosts`) di komputer host Windows Anda telah mengarahkan domain utama ke IP Load Balancer (`172.16.2.2`). Akses layanan berikut melalui web browser tanpa menyertakan nomor port:
 
-```bash
-# Install apache2-utils jika belum tersedia
-ubuntu@ubuntu-server-1-24:~$ sudo apt install apache2-utils -y
+- **Situs Utama (Load Balancing Round-Robin/LeastConn ke Server 1 & Server 2):**
+  - URL: `http://www.milnandy.local` atau `http://milnandy.local`
+  - _Hasil:_ Halaman portofolio utama tampil dan merespons secara bergantian dari kedua server backend.
+- **Aplikasi Game 2048 (Dialihkan ke Backend Port 8001):**
+  - URL: `http://games.milnandy.local`
+  - _Hasil:_ Permainan 2048 terbuka secara langsung di port standar 80 publik, namun diproses secara transparan oleh _reverse proxy_ di balik layar menuju port `8001`.
+- **Blog / Panel SSL (Dialihkan ke HTTPS):**
+  - URL: `http://blog.milnandy.local`
+  - _Hasil:_ Browser secara otomatis melakukan _redirect_ 301 menuju protokol aman `https://blog.milnandy.local`.
+- **Manajemen Database (phpMyAdmin):**
+  - URL: `http://www.milnandy.local/phpmyadmin`
+  - _Hasil:_ Halaman login phpMyAdmin terbuka dengan mengarahkan trafik secara eksklusif ke Server 1 (`172.16.2.2:8000`).
+- **Dasbor Statistik HAProxy (Khusus saat menggunakan HAProxy):**
+  - URL: `http://www.milnandy.local/lbstats`
+  - _Hasil:_ Menampilkan panel pemantauan kesehatan klaster (_health check_) real-time setelah memasukkan autentikasi (`admin:adminpassword`).
 
-# Menjalankan simulasi background loop pengujian beban (100 request, 5 koneksi konkuren)
-ubuntu@ubuntu-server-1-24:~$ while true; do ab -n 100 -c 5 http://www.milnandy.local/; sleep 1; done
-```
+> ![Subdomain & Path Verification](../assets/phase-1-sandbox/06-subdomains-pma-verification.png)
+> _[Instruksi]: Lampirkan tangkapan layar browser saat membuka situs games.milnandy.local dan path /phpmyadmin tanpa mencantumkan port._
 
-Pantau distribusi akses masuk secara _real-time_ pada log akses Nginx di Server 1:
+---
 
-```bash
-ubuntu@ubuntu-server-1-24:~$ tail -f /var/log/nginx/access.log
-```
+### 2. Verifikasi Algoritma Load Balancing (Round-Robin & Least Connections)
 
-> ![HAProxy/Nginx Stats & Testing Verification](../assets/phase-1-sandbox/06-load-balancing-verification.png)
-> *[Instruksi]: Ambil tangkapan layar yang menampilkan dasbor statistik HAProxy (`/lbstats`) atau rekaman *access log* Nginx saat simulasi ApacheBench berjalan untuk memperlihatkan pembagian request yang seimbang ke Server 1 dan Server 2.*
+Untuk membuktikan bahwa mekanisme distribusi beban bekerja dengan baik, kita menggunakan utilitas uji beban **ApacheBench (`ab`)** untuk menembak server secara konkuren.
 
-### Log Masalah Terkenal & Solusi (Troubleshooting Log)
+#### **A. Verifikasi Algoritma Round-Robin (Bergantian Rata)**
+
+Algoritma Round-Robin membagi request secara bergiliran urut dari Server 1 ke Server 2.
+
+1. Pastikan backend dikonfigurasi dengan `balance roundrobin` (di HAProxy) atau tanpa argumen tambahan di _upstream_ Nginx.
+2. Jalankan perintah pengujian dari terminal:
+   ```bash
+   ubuntu@ubuntu-server-1-24:~$ ab -n 10 -c 1 http://www.milnandy.local/
+   ```
+3. Cek log akses pada kedua server untuk melihat pencatatan waktu dan giliran IP yang merespons.
+
+> ![Round-Robin Verification](../assets/phase-1-sandbox/06-roundrobin-verification.png)
+> *[Instruksi]: Lampirkan tangkapan layar terminal yang menunjukkan hasil *access log* Nginx/Apache di Server 1 dan Server 2 menerima request secara bergantian (selang-seling).*
+
+#### **B. Verifikasi Algoritma Least Connections (`leastconn` / `least_conn`)**
+
+Algoritma ini mengarahkan trafik baru ke server yang saat itu sedang memegang jumlah koneksi aktif paling sedikit.
+
+1. Aktifkan konfigurasi `leastconn` (HAProxy) atau `least_conn;` (Nginx di dalam blok _upstream_).
+2. Jalankan simulasi pengujian beban dengan koneksi konkuren yang padat agar terlihat pengaturannya:
+   ```bash
+   ubuntu@ubuntu-server-1-24:~$ while true; do ab -n 200 -c 10 http://www.milnandy.local/; sleep 1; done
+   ```
+3. Amati perubahan metrik jumlah sesi aktif pada dasbor `/lbstats` (jika menggunakan HAProxy) atau amati lonjakan trafik pada _access.log_ [12].
+
+> ![Least Connections Verification](../assets/phase-1-sandbox/06-leastconn-verification.png)
+> _[Instruksi]: Lampirkan tangkapan layar panel /lbstats (HAProxy) atau hasil log real-time (Nginx) yang membuktikan bahwa server dengan beban koneksi lebih rendah diprioritaskan menerima sambungan baru._
+
+---
+
+### 🛠️ Log Masalah Terkenal & Solusi (Troubleshooting Log)
 
 1.  **HAProxy / Nginx Gagal Start (Port 80 Terpakai):**
     - _Gejala:_ Layanan load balancer gagal melakukan _bind_ ke port 80.
@@ -289,3 +333,7 @@ ubuntu@ubuntu-server-1-24:~$ tail -f /var/log/nginx/access.log
     - _Gejala:_ Situs web merespons, namun tata letak CSS dan gambar gagal dimuat (_404 Not Found_ pada aset).
     - _Penyebab:_ Path relatif pada direktori web tidak diteruskan dengan benar oleh _reverse proxy_ ke port backend Apache (8000).
     - _Solusi:_ Tambahkan direktif header tambahan pada konfigurasi proxy (`proxy_set_header Host $host;` dan `proxy_set_header X-Forwarded-For ...`) serta pastikan blok `<Directory>` di dalam konfigurasi Apache mengizinkan akses penuh (`Require all granted`).
+3.  **Halaman `/phpmyadmin` Mengembalikan Error 404 pada Nginx:**
+    - _Gejala:_ Saat mengakses `http://www.milnandy.local/phpmyadmin`, browser menampilkan halaman _Not Found_.
+    - _Penyebab:_ Blok `location /phpmyadmin` pada konfigurasi Nginx belum dipetakan secara benar ke _backend_ Apache port 8000 tempat phpMyAdmin di-host.
+    - _Solusi:_ Pastikan direktif `proxy_pass http://172.16.2.2:8000/phpmyadmin;` terpasang dengan tepat di dalam blok _server block_ Nginx.
