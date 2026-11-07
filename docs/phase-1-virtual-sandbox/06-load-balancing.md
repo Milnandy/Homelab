@@ -196,7 +196,10 @@ Isi konfigurasi `/etc/nginx/conf.d/subdomains.conf`:
 ```nginx
 # 1. Definisi Upstream Klaster dengan Algoritma Least Connections
 upstream backend_www {
+
+    # Mengaktifkan algoritma Least Connections
     least_conn;
+
     server 172.16.2.2:8000; # Apache Server 1
     server 172.16.2.3:80;   # Nginx Server 2
 }
@@ -205,6 +208,14 @@ upstream backend_www {
 server {
     listen 80;
     server_name www.milnandy.local milnandy.local;
+
+    # Halaman statistik internal Nginx
+    location /nginx_status {
+        stub_status;
+        allow 127.0.0.1;
+        allow 172.16.2.0/24; # Izinkan subnet jaringan lab lokal Anda
+        allow all;
+        #deny all;
 
     location /phpmyadmin {
         proxy_pass http://172.16.2.2:8000/phpmyadmin;
@@ -271,21 +282,29 @@ Pastikan rute DNS lokal (`hosts`) di komputer host Windows Anda telah mengarahka
 - **Situs Utama (Load Balancing Round-Robin/LeastConn ke Server 1 & Server 2):**
   - URL: `http://www.milnandy.local` atau `http://milnandy.local`
   - _Hasil:_ Halaman portofolio utama tampil dan merespons secara bergantian dari kedua server backend.
+    ![Subdomain & Path Verification](/assets/phase-1-sandbox/image/subdomain-haproxy.PNG)
+    ![Subdomain & Path Verification](/assets/phase-1-sandbox/image/subdomain-haproxy1.PNG)
+    > _Tampilan web browser dengan penerapan reverse proxy saat membuka www.milnandy.local tanpa port serta penerapan loadbalancer antara server1 dan server2._
 - **Aplikasi Game 2048 (Dialihkan ke Backend Port 8001):**
   - URL: `http://games.milnandy.local`
   - _Hasil:_ Permainan 2048 terbuka secara langsung di port standar 80 publik, namun diproses secara transparan oleh _reverse proxy_ di balik layar menuju port `8001`.
+    ![Subdomain & Path Verification](/assets/phase-1-sandbox/image/subdomain-haproxy2.PNG)
+    > _Tampilan web browser dengan penerapan reverse proxy saat membuka games.milnandy.local tanpa port._
 - **Blog / Panel SSL (Dialihkan ke HTTPS):**
   - URL: `http://blog.milnandy.local`
   - _Hasil:_ Browser secara otomatis melakukan _redirect_ 301 menuju protokol aman `https://blog.milnandy.local`.
+    ![Subdomain & Path Verification](/assets/phase-1-sandbox/image/subdomain-haproxy3.PNG)
+    > _Tampilan web browser dengan penerapan reverse proxy saat membuka blog.milnandy.local tanpa port._
 - **Manajemen Database (phpMyAdmin):**
   - URL: `http://www.milnandy.local/phpmyadmin`
   - _Hasil:_ Halaman login phpMyAdmin terbuka dengan mengarahkan trafik secara eksklusif ke Server 1 (`172.16.2.2:8000`).
+    ![Subdomain & Path Verification](/assets/phase-1-sandbox/image/subdomain-haproxy4.PNG)
+    > _Tampilan web browser dengan penerapan reverse proxy saat membuka /phpmyadmin tanpa port._
 - **Dasbor Statistik HAProxy (Khusus saat menggunakan HAProxy):**
-  - URL: `http://www.milnandy.local/lbstats`
+  - URL: `http://www.milnandy.local/lbstats` atau `172.16.2.2/lbstats`
   - _Hasil:_ Menampilkan panel pemantauan kesehatan klaster (_health check_) real-time setelah memasukkan autentikasi (`admin:adminpassword`).
-
-> ![Subdomain & Path Verification](../assets/phase-1-sandbox/06-subdomains-pma-verification.png)
-> _[Instruksi]: Lampirkan tangkapan layar browser saat membuka situs games.milnandy.local dan path /phpmyadmin tanpa mencantumkan port._
+    ![Subdomain & Path Verification](/assets/phase-1-sandbox/image/lbstats.PNG)
+    > _Image browser saat membuka monitoring bawaan dari haproxy._
 
 ---
 
@@ -297,15 +316,24 @@ Untuk membuktikan bahwa mekanisme distribusi beban bekerja dengan baik, kita men
 
 Algoritma Round-Robin membagi request secara bergiliran urut dari Server 1 ke Server 2.
 
-1. Pastikan backend dikonfigurasi dengan `balance roundrobin` (di HAProxy) atau tanpa argumen tambahan di _upstream_ Nginx.
-2. Jalankan perintah pengujian dari terminal:
+1. Pastikan backend dikonfigurasi dengan `balance roundrobin` (di HAProxy dan Nginx) atau tanpa argumen tambahan di _upstream_ Nginx.
+2. Jalankan simulasi pengujian beban dengan koneksi konkuren yang padat agar terlihat pengaturannya:
    ```bash
-   ubuntu@ubuntu-server-1-24:~$ ab -n 10 -c 1 http://www.milnandy.local/
+   ubuntu@ubuntu-server-1-24:~$ while true; do ab -n 200 -c 10 http://www.milnandy.local/; sleep 1; done
    ```
-3. Cek log akses pada kedua server untuk melihat pencatatan waktu dan giliran IP yang merespons.
+3. Cek log akses pada kedua server untuk melihat pencatatan waktu dan giliran IP yang merespons dan lbstats.
 
-> ![Round-Robin Verification](../assets/phase-1-sandbox/06-roundrobin-verification.png)
-> *[Instruksi]: Lampirkan tangkapan layar terminal yang menunjukkan hasil *access log* Nginx/Apache di Server 1 dan Server 2 menerima request secara bergantian (selang-seling).*
+![Round-Robin Verification](/assets/phase-1-sandbox/image/lbstats4.PNG)
+![Round-Robin Verification](/assets/phase-1-sandbox/image/lbstats5.PNG)
+![Round-Robin Verification](/assets/phase-1-sandbox/image/lbstats6.PNG)
+
+> _Image menunjukkan hasil access log haproxy di Server 1 dan Server 2 menerima request secara bergantian (selang-seling) dan monitoring haproxy (bisa dilihat dibagian "backend_www" header "Session" di kolom "Cur" dan "Total")._
+
+![Round-Robin Verification](/assets/phase-1-sandbox/image/nginx-status4.PNG)
+![Round-Robin Verification](/assets/phase-1-sandbox/image/nginx-status5.PNG)
+![Round-Robin Verification](/assets/phase-1-sandbox/image/nginx-status6.PNG)
+
+> _Image menunjukkan hasil access log nginx di Server 1 dan Server 2 menerima request secara leastconn (koneksi paling sedikit) dan monitoring nginx (bisa dilihat dibagian "server accepts handled requests") tidak sedetail pada monitoring haproxy._
 
 #### **B. Verifikasi Algoritma Least Connections (`leastconn` / `least_conn`)**
 
@@ -316,10 +344,19 @@ Algoritma ini mengarahkan trafik baru ke server yang saat itu sedang memegang ju
    ```bash
    ubuntu@ubuntu-server-1-24:~$ while true; do ab -n 200 -c 10 http://www.milnandy.local/; sleep 1; done
    ```
-3. Amati perubahan metrik jumlah sesi aktif pada dasbor `/lbstats` (jika menggunakan HAProxy) atau amati lonjakan trafik pada _access.log_ [12].
+3. Amati perubahan metrik jumlah sesi aktif pada dasbor `/lbstats` (jika menggunakan HAProxy) atau amati lonjakan trafik pada _access.log_ dan `/nginx_status` (jika menggunakan Nginx).
 
-> ![Least Connections Verification](../assets/phase-1-sandbox/06-leastconn-verification.png)
-> _[Instruksi]: Lampirkan tangkapan layar panel /lbstats (HAProxy) atau hasil log real-time (Nginx) yang membuktikan bahwa server dengan beban koneksi lebih rendah diprioritaskan menerima sambungan baru._
+![Least Connections Verification](/assets/phase-1-sandbox/image/lbstats1.PNG)
+![Least Connections Verification](/assets/phase-1-sandbox/image/lbstats2.PNG)
+![Least Connections Verification](/assets/phase-1-sandbox/image/lbstats3.PNG)
+
+> _Image menunjukkan hasil access log haproxy di Server 1 dan Server 2 menerima request secara leastconn (koneksi paling sedikit) dan monitoring haproxy (bisa dilihat dibagian "backend_www" header "Session" di kolom "Cur" dan "Total")._
+
+![Least Connections Verification](/assets/phase-1-sandbox/image/nginx-status1.PNG)
+![Least Connections Verification](/assets/phase-1-sandbox/image/nginx-status2.PNG)
+![Least Connections Verification](/assets/phase-1-sandbox/image/nginx-status3.PNG)
+
+> _Image menunjukkan hasil access log nginx di Server 1 dan Server 2 menerima request secara leastconn (koneksi paling sedikit) dan monitoring nginx (bisa dilihat dibagian "server accepts handled requests") tidak sedetail pada monitoring haproxy._
 
 ---
 
