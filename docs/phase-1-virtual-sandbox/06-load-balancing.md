@@ -13,7 +13,7 @@
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 06 Topology](../assets/phase-1-sandbox/06-load-balancing-topology.png)
+![Modul 06 Topology](/assets/phase-1-sandbox/image/load-balancer-acl-backend-architecture-editable.drawio.png)
 
 > _[Placeholder Gambar]: Diagram arsitektur yang menggambarkan klien mengirim trafik HTTP ke Load Balancer (Port 80), di mana HAProxy/Nginx memilah request berdasarkan ACL domain/path dan mendistribusikannya ke backend server._
 
