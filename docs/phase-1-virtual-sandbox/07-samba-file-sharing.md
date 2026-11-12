@@ -10,9 +10,9 @@
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 07 Topology](../assets/phase-1-sandbox/07-samba-file-sharing-topology.png)
+![Modul 07 Topology](/assets/phase-1-sandbox/image/samba-shares-windows-client-server1-editable.drawio.png)
 
-> _[Placeholder Gambar]: Diagram yang memvisualisasikan Windows Client memetakan berbagai jenis share Samba (`PublicGeneral`, `DeveloperTeam`, `ArsipSOP`) dari server `172.16.2.2` / `server1-24`._
+> _Diagram yang memvisualisasikan Windows Client memetakan berbagai jenis share Samba (`PublicGeneral`, `DeveloperTeam`, `ArsipSOP`) dari server `172.16.2.2` / `server1-24`._
 
 ### Tabel Pengamatan Struktur Direktori Samba
 
