@@ -2,148 +2,208 @@
 
 ## 📌 Ringkasan & Tujuan
 
-- **Tujuan Pembelajaran:** Membangun layanan berbagi berkas lintas platform dengan Samba, mengimplementasikan batasan keamanan unggah berdasarkan ekstensi (_veto files_), dan mengonfigurasi otorisasi berbasis grup sistem (_Group ACLs_) [13].
-- **Skenario / Case Study:** Perusahaan membutuhkan folder bersama yang bebas diakses tanpa kata sandi (_public share_) untuk pertukaran dokumen umum, tetapi harus terlindung dari pengunggahan malware/virus bertipe executable. Selain itu, dibuat folder rahasia khusus divisi IT dan HRD yang hanya bisa dibuka oleh anggota masing-masing divisi, serta dapat terpetakan secara simultan pada Windows Host.
+- **Tujuan Pembelajaran:** Membangun layanan berbagi berkas (_file sharing_) lintas platform menggunakan Samba, mengonfigurasi multi-tipe _share_ (Public, Department Private, Personal Home Directories, dan Read-Only Archive), menerapkan hak akses berbasis grup sistem dengan **Setgid bit**, membersihkan peringatan NetBIOS melalui penyesuaian _hostname/hosts_, serta mengelola pemetaan _network drive_ pada sistem operasi Windows.
+- **Skenario / Case Study:** Perusahaan memerlukan infrastruktur penyimpanan bersama yang terstruktur dan aman. Administrator membuat folder publik untuk pengumuman umum, folder privat khusus tim _developer_ yang diatur menggunakan hak akses grup dengan pewarisan otomatis (_Setgid_), direktori arsip perusahaan yang bersifat baca-saja (_Read-Only_), serta direktori privat personal untuk setiap _user_. Seluruhnya diuji coba dan dipetakan secara simultan dari klien Windows Host.
 - **Kebutuhan Perangkat / Prasyarat:**
-  - Samba Server (`samba`)
-  - Windows 10 Host Client
+  - Paket Samba (`samba`)
+  - Windows 10/11 Host Client (File Explorer & CMD)
 
 ## 🗺️ Topologi Jaringan & Arsitektur
 
-![Modul 06 Topology](../assets/06-samba-file-sharing-topology.png)
+![Modul 07 Topology](/assets/phase-1-sandbox/image/samba-shares-windows-client-server1-editable.drawio.png)
 
-> _[Placeholder Gambar]: Diagram yang memvisualisasikan Windows Client memetakan dua map drive virtual secara bersamaan menggunakan IP (kredensial divisi IT) dan Hostname (kredensial divisi HRD)._
+> _Diagram yang memvisualisasikan Windows Client memetakan berbagai jenis share Samba (`PublicGeneral`, `DeveloperTeam`, `ArsipSOP`) dari server `172.16.2.2` / `server1-24`._
+
+### Tabel Pengamatan Struktur Direktori Samba
+
+| Nama Share (`smb.conf`) | Path Fisik Direktori   | Tipe Akses             | Target Pengguna                           |
+| ----------------------- | ---------------------- | ---------------------- | ----------------------------------------- |
+| `[PublicGeneral]`       | `/srv/samba/public`    | Publik (Guest OK)      | Seluruh Karyawan (Tanpa Login)            |
+| `[DeveloperTeam]`       | `/srv/samba/developer` | Privat (Berbasis Grup) | Anggota Grup `developer` (`dev1`, `dev2`) |
+| `[homes]`               | `/home/%U`             | Privat per User        | Setiap User Sistem Aktif                  |
+| `[ArsipSOP]`            | `/srv/samba/arsip`     | Baca Saja (Read-Only)  | Anggota Grup `karyawan`                   |
 
 ---
 
 ## 🚀 Langkah-Langkah Konfigurasi (Step-by-Step)
 
-### Langkah 1: Pembuatan Folder Bersama Publik & Proteksi Malware
+### Langkah 1: Pembersihan Dependensi & Instalasi Samba
 
-- **Penjelasan Singkat:** Membuat folder publik tanpa otorisasi kata sandi, namun menerapkan filter _veto_ untuk memblokir berkas eksekusi (_executable_) berbahaya.
+- **Penjelasan Singkat:** Memastikan paket instalasi bersih dari korupsi cache apt, lalu menginstal layanan Samba.
 - **Perintah CLI / Konfigurasi:**
 
 ```bash
-# Menginstal paket Samba
+# Membersihkan cache dan memperbaiki potensi kerusakan dependensi
+ubuntu@ubuntu-server-1-24:~$ sudo apt clean && sudo apt autoclean
+ubuntu@ubuntu-server-1-24:~$ sudo apt --fix-broken install -y
 ubuntu@ubuntu-server-1-24:~$ sudo apt update && sudo apt install samba -y
 
-# Membuat folder publik
-ubuntu@ubuntu-server-1-24:~$ sudo mkdir -p /home/share && sudo chmod 777 /home/share
-
-# Mengonfigurasi berkas utama Samba
-ubuntu@ubuntu-server-1-24:~$ sudo nano /etc/samba/smb.conf
+# Memverifikasi status layanan Samba (smbd)
+ubuntu@ubuntu-server-1-24:~$ sudo systemctl status smbd
 ```
 
-Isi konfigurasi blok `[Share]` di akhir berkas:
+### Langkah 2: Pembuatan Struktur Direktori, Grup, dan Pengguna Sistem
 
-```ini
-[Share]
-path = /home/share
-writeable = yes
-guest = yes
-guest only = yes
-force create mode = 777
-force directory mode = 777
-veto files = /*.exe/*.dll/*.bat/*.vbs/*.tmp/
-```
-
-### Langkah 2: Pembuatan Hak Akses Berbasis Grup (HRD & IT)
-
-- **Penjelasan Singkat:** Membuat grup sistem operasi, menambahkan user ke grup, dan mengunci izin direktori fisik menggunakan kepemilikan grup.
+- **Penjelasan Singkat:** Membuat struktur folder standar di `/srv/samba/`, membuat grup sistem (`developer`, `karyawan`), mendaftarkan user baru, serta mengonfigurasi **Setgid bit (`2770`)** agar file baru di dalam folder otomatis mewarisi kepemilikan grup.
 - **Perintah CLI / Konfigurasi:**
 
 ```bash
-# Membuat grup divisi
-ubuntu@ubuntu-server-1-24:~$ sudo groupadd hrd
-ubuntu@ubuntu-server-1-24:~$ sudo groupadd divisi-it
-
-# Membuat pengguna sistem baru
-ubuntu@ubuntu-server-1-24:~$ sudo useradd -m -g hrd idn
-ubuntu@ubuntu-server-1-24:~$ sudo useradd -m -g divisi-it idn-it
+# Membuat grup sistem dan pengguna
+ubuntu@ubuntu-server-1-24:~$ sudo groupadd developer
+ubuntu@ubuntu-server-1-24:~$ sudo groupadd karyawan
+ubuntu@ubuntu-server-1-24:~$ sudo useradd -m -G developer dev1
+ubuntu@ubuntu-server-1-24:~$ sudo useradd -m -G developer dev2
+ubuntu@ubuntu-server-1-24:~$ sudo useradd -m -G karyawan dev1
+ubuntu@ubuntu-server-1-24:~$ sudo useradd -m -G karyawan dev2
 
 # Mendaftarkan password user ke database Samba
-ubuntu@ubuntu-server-1-24:~$ sudo smbpasswd -a idn
-ubuntu@ubuntu-server-1-24:~$ sudo smbpasswd -a idn-it
+ubuntu@ubuntu-server-1-24:~$ sudo smbpasswd -a dev1
+ubuntu@ubuntu-server-1-24:~$ sudo smbpasswd -a dev2
 ```
 
-Membuat dan mengunci izin folder secara fisik (770):
+Membuat struktur direktori fisik dan menerapkan _Setgid bit_:
 
 ```bash
-# Folder HRD
-ubuntu@ubuntu-server-1-24:~$ sudo mkdir -p /home/hrd
-ubuntu@ubuntu-server-1-24:~$ sudo chgrp hrd /home/hrd
-ubuntu@ubuntu-server-1-24:~$ sudo chmod 770 /home/hrd
-
-# Folder IT
-ubuntu@ubuntu-server-1-24:~$ sudo mkdir -p /home/office
-ubuntu@ubuntu-server-1-24:~$ sudo chgrp divisi-it /home/office
-ubuntu@ubuntu-server-1-24:~$ sudo chmod 770 /home/office
+ubuntu@ubuntu-server-1-24:~$ sudo mkdir -p /srv/samba/{public,developer,arsip}
+ubuntu@ubuntu-server-1-24:~$ sudo chown -R root:developer /srv/samba/developer
+ubuntu@ubuntu-server-1-24:~$ sudo chmod -R 2770 /srv/samba/developer
 ```
 
-### Langkah 3: Konfigurasi Keamanan Folder Privat Samba
+_(Catatan: Angka `2` di depan `2770` adalah **Setgid bit**, memastikan setiap file/folder baru di dalam direktori ini otomatis mewarisi grup `developer`)._
 
-- **Penjelasan Singkat:** Mengonfigurasi Samba agar memvalidasi kepemilikan grup sebelum mengizinkan penulisan atau pembacaan berkas.
+### Langkah 3: Konfigurasi Komprehensif Berkas Samba (`smb.conf`)
+
+- **Penjelasan Singkat:** Mengonfigurasi empat jenis _share_ berbeda di dalam berkas konfigurasi utama Samba.
 - **Perintah CLI / Konfigurasi:**
 
 ```bash
 ubuntu@ubuntu-server-1-24:~$ sudo nano /etc/samba/smb.conf
 ```
 
-Tambahkan konfigurasi folder privat di akhir berkas:
+Tambahkan konfigurasi berikut di bagian paling bawah berkas:
 
 ```ini
-[HRD]
-path = /home/hrd
-writeable = yes
-guest ok = no
-valid users = @hrd
-force group = hrd
-force create mode = 770
-force directory mode = 770
-inherit permissions = yes
+# 1. Jenis Public Share (Bebas / Tanpa Login)
+[PublicGeneral]
+path = /srv/samba/public
+browsable = yes
+writable = yes
+guest ok = yes
+read only = no
 
-[IT]
-path = /home/office
-writeable = yes
-guest ok = no
-valid users = @divisi-it
-force group = divisi-it
-force create mode = 770
-force directory mode = 770
-inherit permissions = yes
+# 2. Jenis Department/Team Private Share (Berbasis Grup)
+[DeveloperTeam]
+path = /srv/samba/developer
+browsable = yes
+writable = yes
+valid users = @developer
+force group = developer
+create mask = 0660
+directory mask = 0770
+read only = no
+
+# 3. Jenis Personal / Home Directory Share (Kerahasiaan Tinggi per User)
+[homes]
+comment = Home Directories
+browseable = no
+writable = yes
+valid users = %S
+create mask = 0700
+directory mask = 0700
+
+# 4. Jenis Read-Only Archive / Distribution Share (Arsip Perusahaan)
+[ArsipSOP]
+path = /srv/samba/arsip
+browsable = yes
+writable = no
+read only = yes
+valid users = @karyawan
 ```
 
-Terapkan perubahan:
+### Langkah 4: Pembersihan Peringatan NetBIOS (_NetBIOS Warning Cleanup_)
+
+- **Penjelasan Singkat:** Menyesuaikan _hostname_ sistem agar sesuai dengan standar resolusi lokal, menghilangkan peringatan NetBIOS saat _testparm_ dijalankan.
+- **Perintah CLI / Konfigurasi:**
 
 ```bash
-ubuntu@ubuntu-server-1-24:~$ sudo systemctl restart smbd.service
+# Mengubah hostname server
+ubuntu@ubuntu-server-1-24:~$ sudo hostnamectl set-hostname server1-24
+
+# Memetakan hostname ke localhost pada /etc/hosts
+ubuntu@ubuntu-server-1-24:~$ sudo nano /etc/hosts
+```
+
+Tambahkan/sesuaikan baris berikut:
+
+```text
+127.0.1.1 server1-24
+```
+
+Uji validasi konfigurasi Samba tanpa error/warning:
+
+```bash
+ubuntu@ubuntu-server-1-24:~$ testparm
+ubuntu@ubuntu-server-1-24:~$ sudo systemctl restart smbd
+```
+
+### Langkah 5: Mengisi Data Percobaan pada Direktori Share
+
+- **Penjelasan Singkat:** Menyiapkan file uji coba di masing-masing direktori share untuk memvalidasi hak akses.
+- **Perintah CLI / Konfigurasi:**
+
+```bash
+# Isi folder Public
+sudo echo "Halo! Ini adalah file pengumuman umum untuk semua orang di jaringan kantor." | sudo tee /srv/samba/public/pengumuman.txt
+
+# Isi folder Developer
+sudo tee /srv/samba/developer/deploy-test.sh << 'EOF'
+#!/bin/bash
+echo 'Source code backend v1.0 berjalan normal.'
+EOF
+sudo chmod 660 /srv/samba/developer/deploy-test.sh
+
+# Isi folder Arsip SOP
+sudo echo "SOP-01: Prosedur Keamanan Jaringan dan Server Perusahaan." | sudo tee /srv/samba/arsip/sop-keamanan.txt
+sudo chown -R root:root /srv/samba/arsip && sudo chmod -R 0755 /srv/samba/arsip
 ```
 
 ---
 
 ## 🔍 Verifikasi & Troubleshooting
 
-### Mengatasi Konflik Multi-Session SMB di Windows
+### Pemetaan _Network Drive_ pada Klien Windows
 
-- **Penjelasan Singkat:** Menjelaskan solusi cerdik untuk memetakan dua folder dengan kredensial berbeda dari satu Windows Client.
-- **Perintah CLI / Konfigurasi:**
+Untuk menghindari konflik sesi SMB tunggal di Windows, gunakan perintah berikut melalui **CMD (Command Prompt)**:
 
 ```cmd
-:: 1. Bersihkan sisa sesi SMB yang menggantung/terkunci pada Windows Host
+:: 1. Bersihkan sisa sesi SMB yang menggantung pada Windows Host
 C:\Windows\system32> net use * /delete /yes
 
-:: 2. Map Folder HRD menggunakan Kredensial User "idn" via alamat IP
-C:\Windows\system32> net use Z: \\172.16.1.2\HRD /user:idn idnmantab
+:: 2. Map Folder DeveloperTeam menggunakan kredensial user dev1 via alamat IP
+C:\Windows\system32> net use Z: \\172.16.2.2\DeveloperTeam /user:dev1
 
-:: 3. Map Folder IT menggunakan Kredensial User "idn-it" via alamat Hostname/FQDN
-C:\Windows\system32> net use Y: \\ubuntu-server-1-24\IT /user:idn-it idnmantab
+:: 3. Map Folder ArsipSOP menggunakan kredensial user dev1 via Hostname/FQDN
+C:\Windows\system32> net use Y: \\server1-24\ArsipSOP /user:dev1
 ```
 
-_Mengapa ini bekerja?_ Windows melihat pemanggilan via IP dan via Hostname sebagai dua entitas jaringan yang berbeda, memungkinkan bypass limitasi default _single-identity_ SMB Windows.
+![Samba Windows Mapping Verification](/assets/phase-1-sandbox/image/sharing-folder.PNG)
+
+> _Tampilan File Explorer Windows yang menampilkan sharing folder._
+
+![Samba Windows Mapping Verification](/assets/phase-1-sandbox/image/sharing-folder1.PNG)
+
+> _Tampilan File Explorer Windows yang sharing foldernya membutuhkan user samba untuk mengaksesnya._
+
+![Samba Windows Mapping Verification](/assets/phase-1-sandbox/image/sharing-folder2.PNG)
+
+> _Tampilan File Explorer Windows setelah login user samba._
 
 ### Log Masalah Terkenal & Solusi (Troubleshooting Log)
 
-1.  **Samba Share Tidak Bisa Diakses (Access Denied):**
-    - _Gejala:_ Pengguna ditolak masuk saat mengakses folder dari Windows Explorer meskipun password sudah benar.
-    - _Penyebab:_ Izin direktori di tingkat sistem operasi Linux (_Linux File Permissions_) masih dimiliki oleh `root` dan mengunci akses grup.
-    - _Solusi:_ Jalankan perintah `sudo chgrp [nama-grup] /path/folder` dan ubah hak aksesnya ke `770` agar anggota grup dapat membaca dan menulis.
+1.  **Konflik Akses Kredensial Berbeda pada IP yang Sama di Windows:**
+    - _Gejala:_ Saat mencoba memetakan dua _share_ berbeda ke IP server yang sama dengan user berbeda, Windows menolak dengan pesan _Multiple connections to a server... are not allowed_.
+    - _Solusi:_ Bersihkan cache sesi menggunakan `net use * /delete /yes`. Akses salah satu share menggunakan alamat IP (`\\172.16.2.2\...`) dan share lainnya menggunakan nama hostname (`\\server1-24\...`).
+2.  **Anggota Grup Tidak Bisa Menulis File di Folder `DeveloperTeam`:**
+    - _Gejala:_ User `dev2` bisa masuk, tetapi gagal membuat atau menyimpan file baru.
+    - _Penyebab:_ Direktori fisik belum mengaktifkan _Setgid bit_, sehingga file baru tidak mewarisi grup `developer`.
+    - _Solusi:_ Pastikan direktori diatur dengan perintah `sudo chmod 2770 /srv/samba/developer` dan kepemilikan grup diatur dengan `sudo chown -R root:developer /srv/samba/developer`.

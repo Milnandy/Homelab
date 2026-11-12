@@ -1,0 +1,139 @@
+<mxfile host="app.diagrams.net" agent="ChatGPT">
+  <diagram id="samba" name="Samba File Sharing">
+    <mxGraphModel dx="933" dy="519" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=23;fontStyle=1;fontColor=#14213D;" value="Arsitektur File Sharing Samba" vertex="1">
+          <mxGeometry height="40" width="1090" x="35" y="15" as="geometry" />
+        </mxCell>
+        <mxCell id="sub" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontColor=#526581;" value="Windows Client mengakses berbagai share Samba pada server1-24 melalui jaringan LAN" vertex="1">
+          <mxGeometry height="28" width="1090" x="35" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="client" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF3FF;strokeColor=#3984D6;strokeWidth=2;fontColor=#173F70;fontSize=15;fontStyle=1;align=center;verticalAlign=middle;spacing=10;" value="&lt;b&gt;WINDOWS CLIENT&lt;/b&gt;&lt;br&gt;&lt;br&gt;File Explorer&lt;br&gt;&lt;b&gt;Network Drive / UNC Path&lt;/b&gt;&lt;br&gt;&lt;br&gt;\\172.16.2.2\NamaShare" vertex="1">
+          <mxGeometry height="145" width="235" x="45" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="server" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5EE;strokeColor=#169B62;strokeWidth=2;fontColor=#164B36;fontSize=14;fontStyle=1;align=center;verticalAlign=middle;spacing=9;" value="&lt;b&gt;SAMBA FILE SERVER&lt;/b&gt;&lt;br&gt;&lt;br&gt;server1-24&lt;br&gt;&lt;b&gt;172.16.2.2&lt;/b&gt;&lt;br&gt;&lt;br&gt;SMB/CIFS Service&lt;br&gt;TCP port 445" vertex="1">
+          <mxGeometry height="155" width="205" x="410" y="205" as="geometry" />
+        </mxCell>
+        <mxCell id="pub" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5EE;strokeColor=#169B62;strokeWidth=2;fontColor=#164B36;fontSize=14;fontStyle=1;align=center;verticalAlign=middle;spacing=9;" value="&lt;b&gt;[PublicGeneral]&lt;/b&gt;&lt;br&gt;/srv/samba/public&lt;br&gt;&lt;br&gt;Guest OK&lt;br&gt;Seluruh karyawan" vertex="1">
+          <mxGeometry height="105" width="310" x="805" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="dev" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF4E5;strokeColor=#D97706;strokeWidth=2;fontColor=#79420B;fontSize=13;align=center;verticalAlign=middle;spacing=8;" value="&lt;b&gt;[DeveloperTeam]&lt;/b&gt;&lt;br&gt;/srv/samba/developer&lt;br&gt;&lt;br&gt;Privat berbasis grup&lt;br&gt;developer: dev1, dev2" vertex="1">
+          <mxGeometry height="105" width="310" x="805" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="homes" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF4E5;strokeColor=#D97706;strokeWidth=2;fontColor=#79420B;fontSize=13;align=center;verticalAlign=middle;spacing=8;" value="&lt;b&gt;[homes]&lt;/b&gt;&lt;br&gt;/home/%U&lt;br&gt;&lt;br&gt;Privat per user&lt;br&gt;Setiap user sistem aktif" vertex="1">
+          <mxGeometry height="105" width="310" x="805" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="arsip" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0ECFF;strokeColor=#7656D6;strokeWidth=2;fontColor=#382477;fontSize=13;align=center;verticalAlign=middle;spacing=8;" value="&lt;b&gt;[ArsipSOP]&lt;/b&gt;&lt;br&gt;/srv/samba/arsip&lt;br&gt;&lt;br&gt;Read-Only&lt;br&gt;Grup karyawan" vertex="1">
+          <mxGeometry height="105" width="310" x="805" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="e0" edge="1" parent="1" source="client" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#3984D6;strokeWidth=2.5;endArrow=block;endFill=1;fontSize=12;fontStyle=1;fontColor=#245A91;labelBackgroundColor=#FFFFFF;" target="server" value="SMB access · TCP 445">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="server" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#169B62;strokeWidth=2.5;endArrow=block;endFill=1;fontSize=12;fontStyle=1;fontColor=#146B45;labelBackgroundColor=#FFFFFF;" target="pub" value="Guest share">
+          <mxGeometry relative="1" x="0.5312" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="660" y="282.5" />
+              <mxPoint x="660" y="152.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="server" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#D97706;strokeWidth=2.5;endArrow=block;endFill=1;fontSize=12;fontStyle=1;fontColor=#9A4D00;labelBackgroundColor=#FFFFFF;" target="dev" value="Group access">
+          <mxGeometry relative="1" x="0.2105" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="server" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#D97706;strokeWidth=2.5;endArrow=block;endFill=1;fontSize=12;fontStyle=1;fontColor=#9A4D00;labelBackgroundColor=#FFFFFF;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="homes" value="Per-user home">
+          <mxGeometry relative="1" x="0.5313" y="2" as="geometry">
+            <mxPoint y="-1" as="offset" />
+            <Array as="points">
+              <mxPoint x="660" y="282.5" />
+              <mxPoint x="660" y="412.5" />
+            </Array>
+            <mxPoint x="530" y="400" as="sourcePoint" />
+            <mxPoint x="720" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="server" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#7656D6;strokeWidth=2.5;endArrow=block;endFill=1;fontSize=12;fontStyle=1;fontColor=#5537A3;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="arsip" value="Read-only share">
+          <mxGeometry relative="1" x="0.6667" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="660" y="282.5" />
+              <mxPoint x="660" y="542.5" />
+            </Array>
+            <mxPoint x="475" y="395" as="sourcePoint" />
+            <mxPoint x="610" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tt" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#244B75;strokeColor=#244B75;fontColor=#FFFFFF;fontStyle=1;fontSize=15;align=left;verticalAlign=middle;spacingLeft=10;" value="Tabel Pengamatan Struktur Direktori Samba" vertex="1">
+          <mxGeometry height="30" width="1090" x="35" y="625" as="geometry" />
+        </mxCell>
+        <mxCell id="h0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244B75;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" value="Nama Share (smb.conf)" vertex="1">
+          <mxGeometry height="32" width="215" x="35" y="655" as="geometry" />
+        </mxCell>
+        <mxCell id="h1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244B75;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" value="Path Fisik Direktori" vertex="1">
+          <mxGeometry height="32" width="225" x="250" y="655" as="geometry" />
+        </mxCell>
+        <mxCell id="h2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244B75;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" value="Tipe Akses" vertex="1">
+          <mxGeometry height="32" width="205" x="475" y="655" as="geometry" />
+        </mxCell>
+        <mxCell id="h3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#244B75;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" value="Target Pengguna" vertex="1">
+          <mxGeometry height="32" width="440" x="680" y="655" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="[PublicGeneral]" vertex="1">
+          <mxGeometry height="32" width="215" x="35" y="687" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="/srv/samba/public" vertex="1">
+          <mxGeometry height="32" width="225" x="250" y="687" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="Publik (Guest OK)" vertex="1">
+          <mxGeometry height="32" width="205" x="475" y="687" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="Seluruh Karyawan (Tanpa Login)" vertex="1">
+          <mxGeometry height="32" width="440" x="680" y="687" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="[DeveloperTeam]" vertex="1">
+          <mxGeometry height="32" width="215" x="35" y="719" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="/srv/samba/developer" vertex="1">
+          <mxGeometry height="32" width="225" x="250" y="719" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="Privat (Berbasis Grup)" vertex="1">
+          <mxGeometry height="32" width="205" x="475" y="719" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="Anggota grup developer (dev1, dev2)" vertex="1">
+          <mxGeometry height="32" width="440" x="680" y="719" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="[homes]" vertex="1">
+          <mxGeometry height="32" width="215" x="35" y="751" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="/home/%U" vertex="1">
+          <mxGeometry height="32" width="225" x="250" y="751" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="Privat per User" vertex="1">
+          <mxGeometry height="32" width="205" x="475" y="751" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="Setiap User Sistem Aktif" vertex="1">
+          <mxGeometry height="32" width="440" x="680" y="751" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="[ArsipSOP]" vertex="1">
+          <mxGeometry height="32" width="215" x="35" y="783" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="/srv/samba/arsip" vertex="1">
+          <mxGeometry height="32" width="225" x="250" y="783" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="Baca Saja (Read-Only)" vertex="1">
+          <mxGeometry height="32" width="205" x="475" y="783" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#A9BED6;fontColor=#183153;fontSize=11;align=left;verticalAlign=middle;spacing=6;" value="Anggota Grup karyawan" vertex="1">
+          <mxGeometry height="32" width="440" x="680" y="783" as="geometry" />
+        </mxCell>
+        <mxCell id="note" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E8;strokeColor=#E7B65C;fontColor=#704B13;fontSize=11;align=left;verticalAlign=middle;spacing=8;" value="&lt;b&gt;Catatan:&lt;/b&gt; Jalur UNC menggunakan format \\172.16.2.2\NamaShare. Akses efektif bergantung pada konfigurasi Samba, izin filesystem Linux, autentikasi, dan keanggotaan grup." vertex="1">
+          <mxGeometry height="48" width="1090" x="35" y="825" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
