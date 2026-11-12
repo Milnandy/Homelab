@@ -2,7 +2,7 @@
 
 ## 📌 Ringkasan & Tujuan
 
-- **Tujuan Pembelajaran:** Membangun layanan berbagi berkas (_file sharing_) lintas platform menggunakan Samba, mengonfigurasi multi-tipe _share_ (Public, Department Private, Personal Home Directories, dan Read-Only Archive), menerapkan hak akses berbasis grup sistem dengan **Setgid bit**, membersihkan peringatan NetBIOS melalui penyesuaian _hostname/hosts_, serta mengelola pemetaan _network drive_ pada sistem operasi Windows [13].
+- **Tujuan Pembelajaran:** Membangun layanan berbagi berkas (_file sharing_) lintas platform menggunakan Samba, mengonfigurasi multi-tipe _share_ (Public, Department Private, Personal Home Directories, dan Read-Only Archive), menerapkan hak akses berbasis grup sistem dengan **Setgid bit**, membersihkan peringatan NetBIOS melalui penyesuaian _hostname/hosts_, serta mengelola pemetaan _network drive_ pada sistem operasi Windows.
 - **Skenario / Case Study:** Perusahaan memerlukan infrastruktur penyimpanan bersama yang terstruktur dan aman. Administrator membuat folder publik untuk pengumuman umum, folder privat khusus tim _developer_ yang diatur menggunakan hak akses grup dengan pewarisan otomatis (_Setgid_), direktori arsip perusahaan yang bersifat baca-saja (_Read-Only_), serta direktori privat personal untuk setiap _user_. Seluruhnya diuji coba dan dipetakan secara simultan dari klien Windows Host.
 - **Kebutuhan Perangkat / Prasyarat:**
   - Paket Samba (`samba`)
@@ -44,7 +44,7 @@ ubuntu@ubuntu-server-1-24:~$ sudo systemctl status smbd
 
 ### Langkah 2: Pembuatan Struktur Direktori, Grup, dan Pengguna Sistem
 
-- **Penjelasan Singkat:** Membuat struktur folder standar di `/srv/samba/`, membuat grup sistem (`developer`, `karyawan`), mendaftarkan user baru, serta mengonfigurasi **Setgid bit (`2770`)** agar file baru di dalam folder otomatis mewarisi kepemilikan grup [13].
+- **Penjelasan Singkat:** Membuat struktur folder standar di `/srv/samba/`, membuat grup sistem (`developer`, `karyawan`), mendaftarkan user baru, serta mengonfigurasi **Setgid bit (`2770`)** agar file baru di dalam folder otomatis mewarisi kepemilikan grup.
 - **Perintah CLI / Konfigurasi:**
 
 ```bash
@@ -186,14 +186,23 @@ C:\Windows\system32> net use Z: \\172.16.2.2\DeveloperTeam /user:dev1
 C:\Windows\system32> net use Y: \\server1-24\ArsipSOP /user:dev1
 ```
 
-> ![Samba Windows Mapping Verification](../assets/phase-1-sandbox/07-samba-mapping-verification.png)
-> _[Instruksi]: Lampirkan tangkapan layar File Explorer Windows yang menampilkan Drive Z: (DeveloperTeam) dan Drive Y: (ArsipSOP) berhasil terhubung secara bersamaan._
+![Samba Windows Mapping Verification](/assets/phase-1-sandbox/image/sharing-folder.PNG)
+
+> _Tampilan File Explorer Windows yang menampilkan sharing folder._
+
+![Samba Windows Mapping Verification](/assets/phase-1-sandbox/image/sharing-folder1.PNG)
+
+> _Tampilan File Explorer Windows yang sharing foldernya membutuhkan user samba untuk mengaksesnya._
+
+![Samba Windows Mapping Verification](/assets/phase-1-sandbox/image/sharing-folder2.PNG)
+
+> _Tampilan File Explorer Windows setelah login user samba._
 
 ### Log Masalah Terkenal & Solusi (Troubleshooting Log)
 
 1.  **Konflik Akses Kredensial Berbeda pada IP yang Sama di Windows:**
     - _Gejala:_ Saat mencoba memetakan dua _share_ berbeda ke IP server yang sama dengan user berbeda, Windows menolak dengan pesan _Multiple connections to a server... are not allowed_.
-    - _Solusi:_ Bersihkan cache sesi menggunakan `net use * /delete /yes`. Akses salah satu share menggunakan alamat IP (`\\172.16.2.2\...`) dan share lainnya menggunakan nama hostname (`\\server1-24\...`) [13].
+    - _Solusi:_ Bersihkan cache sesi menggunakan `net use * /delete /yes`. Akses salah satu share menggunakan alamat IP (`\\172.16.2.2\...`) dan share lainnya menggunakan nama hostname (`\\server1-24\...`).
 2.  **Anggota Grup Tidak Bisa Menulis File di Folder `DeveloperTeam`:**
     - _Gejala:_ User `dev2` bisa masuk, tetapi gagal membuat atau menyimpan file baru.
     - _Penyebab:_ Direktori fisik belum mengaktifkan _Setgid bit_, sehingga file baru tidak mewarisi grup `developer`.
